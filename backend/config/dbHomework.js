@@ -1,5 +1,5 @@
 const mongoose = require('mongoose');
-require('dotenv').config({ path: '../secret.env' });
+require('dotenv').config({ path: './.env' });
 
 var HOMEWORK_DB = process.env.MONGOURI_HOMEWORK_DB;
 
