@@ -4,7 +4,7 @@ import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/
 
 // Firebase configuration
 const firebaseConfig = {
-    apiKey: "AIzaSyBkep4kR1KlxAHUQM8-dJo-b0cOjUA1tCc",
+    apiKey: "",
     authDomain: "edufly-61bfe.firebaseapp.com",
     projectId: "edufly-61bfe",
     storageBucket: "edufly-61bfe.appspot.com",

@@ -1,0 +1,86 @@
+.whole{
+    background-color:#8FCB9B;
+}
+
+.topbar{
+    background-color: #5B9279;
+    display: flex;
+    justify-content: space-between;
+    height: 50px;
+}
+
+.logo-small{
+    padding: 30px;
+}
+
+.topbar-span{
+    display: flex;
+    align-items: center;
+    margin-left: 20px;
+    margin-right: 25px;
+}
+
+.topbar-span a{
+    color: #EAE6E5;
+    font-size: 20px;
+    text-decoration: none;
+    margin: 0 25px 0 25px;
+}
+
+.main-container{
+    background-color: #8FCB9B;
+    margin: 0px;  
+}
+
+.background-image {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;               /* Makes image cover the whole div */
+}
+
+.image-container{
+    width: 100%;
+    position: relative; 
+}
+
+.overlay-textbox {
+    position: absolute;
+    top: 10%;
+    left: 5%;
+    background-color: rgba(143, 128, 115, 0.85);
+    box-shadow: 0 8px 16px 0 rgba(0,0,0,0.2), 0 6px 10px 0 rgba(0,0,0,0.19);
+    padding: 10px;
+    border-radius: 25px;
+}
+
+.overlay-textbox h2{
+    color: #EAE6E5;
+}
+
+.button-container{
+    position: fixed;
+    display: flex;
+    justify-content: center;
+    min-width: 100vw;
+    bottom: 20px;
+}
+
+.button-group{
+    gap: 100px;
+}
+
+.button-group button{
+    width: 200px;
+    height: 120px;
+    background-color: #8F8073;
+    color: #EAE6E5;
+    font-size: 36px;
+    font-weight: bold;
+    box-shadow: 0 8px 16px 0 rgba(0,0,0,0.2), 0 6px 10px 0 rgba(0,0,0,0.19);
+}
+
+.button-group button:hover{
+    background-color: #EAE6E5;
+    color: #8F8073;
+    transform:scale(1.5);
+}

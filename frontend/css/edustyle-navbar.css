@@ -1,0 +1,19 @@
+.navbar {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 10px 20px;
+    background-color: #5B9279;
+    position: relative
+}
+
+#profile{
+    width:80px;
+    height:50px;
+}
+
+.dropdown {
+    position: relative;
+    display: inline-block;
+}
+

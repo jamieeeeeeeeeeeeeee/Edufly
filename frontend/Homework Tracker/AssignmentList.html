@@ -1,0 +1,315 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <!-- Bootstrap CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet"
+        integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH" crossorigin="anonymous">
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3/dist/js/bootstrap.bundle.min.js"></script>
+    <!-- Vue 3 -->
+    <script src="https://unpkg.com/vue@3/dist/vue.global.js"></script>
+    <script type="module" src="../update.js"></script>
+
+    <title>EduFly Portal</title>
+    <style>
+        .navbar {
+            background-color: green;
+        }
+    </style>
+</head>
+
+<body>
+    <!-- Navbar -->
+    <nav class="navbar navbar-expand-lg navbar-dark">
+        <a class="navbar-brand" href="../Homepage/home_teacher.html">
+            <img src="../img/icon.png" alt="Logo" class="d-inline-block align-top" style="height: 30px; width: auto;">
+            EduFly
+        </a>
+        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav"
+            aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+            <span class="navbar-toggler-icon"></span>
+        </button>
+        <div class="collapse navbar-collapse" id="navbarNav">
+            <ul class="navbar-nav ml-auto">
+                <li class="nav-item"><a class="nav-link" href="#">&#9997;&#65039; Homework</a></li>
+                <li class="nav-item"><a class="nav-link" href="#">&#128467;&#65039; Timetable</a></li>
+                <li class="nav-item"><a class="nav-link" href="#">&#127891; Dashboard</a></li>
+                <li class="nav-item"><a class="nav-link" href="#">&#128226; Announcement</a></li>
+                <li class="nav-item">
+                    <a class="nav-link" id="profileLink" href="#">&#128100; User's Profile</a>
+                    <!-- Target for dynamic name -->
+                </li>
+            </ul>
+            <ul class="navbar-nav ms-auto">
+                <li class="nav-item"><a class="nav-link" href="#">&#128682; Log Out</a></li>
+            </ul>
+        </div>
+    </nav>
+    <!-- Main container -->
+    <div id="app" class="container mt-4">
+        <label for="classSelect" class="form-label">Select Class:</label>
+        <select v-model="selectedClass" @change="fetchAssignments" id="classSelect" class="form-select mb-4">
+            <option value="" disabled>Select a class</option>
+            <option v-for="className in classes" :key="className" :value="className">
+                {{ className }}
+            </option>
+        </select>
+
+        <h2 v-if="selectedClass">Assignments for {{ selectedClass }}</h2>
+
+        <!-- Add Assignment Button and Form -->
+        <button v-if="selectedClass" @click="showAddAssignmentForm = !showAddAssignmentForm"
+            class="btn btn-primary mb-3">
+            {{ showAddAssignmentForm ? 'Cancel' : 'Add Assignment' }}
+        </button>
+
+        <div v-if="showAddAssignmentForm" class="mb-4">
+            <h3>Add New Assignment</h3>
+            <div class="mb-3">
+                <label for="title" class="form-label">Title</label>
+                <input type="text" v-model="newAssignment.title" id="title" class="form-control">
+            </div>
+            <div class="mb-3">
+                <label for="description" class="form-label">Description</label>
+                <textarea v-model="newAssignment.description" id="description" class="form-control"></textarea>
+            </div>
+            <div class="mb-3">
+                <label for="deadline" class="form-label">Deadline (Date & Time)</label>
+                <input type="datetime-local" v-model="newAssignment.deadline" id="deadline" class="form-control">
+            </div>
+            <button @click="addAssignment" class="btn btn-success">Submit Assignment</button>
+        </div>
+
+        <!-- Assignment Table -->
+        <table v-if="assignments.length > 0" class="table table-striped">
+            <thead>
+                <tr>
+                    <th>Assignment ID</th>
+                    <th>Title</th>
+                    <th>Description</th>
+                    <th>Deadline (Date)</th>
+                    <th>Deadline (Time)</th>
+                    <th>Actions</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr v-for="assignment in assignments" :key="assignment.id">
+                    <td>{{ assignment.id }}</td>
+
+                    <!-- Title Field -->
+                    <td v-if="editingAssignmentId !== assignment.id">{{ assignment.title }}</td>
+                    <td v-else>
+                        <input type="text" v-model="editAssignmentData.title" class="form-control">
+                    </td>
+
+                    <!-- Description Field -->
+                    <td v-if="editingAssignmentId !== assignment.id">{{ assignment.description }}</td>
+                    <td v-else>
+                        <input type="text" v-model="editAssignmentData.description" class="form-control">
+                    </td>
+
+                    <!-- Deadline Date Field -->
+                    <td v-if="editingAssignmentId !== assignment.id">{{ assignment.deadlineDate }}</td>
+                    <td v-else>
+                        <input type="date" v-model="editAssignmentData.deadlineDate" class="form-control">
+                    </td>
+
+                    <!-- Deadline Time Field -->
+                    <td v-if="editingAssignmentId !== assignment.id">{{ assignment.deadlineTime }}</td>
+                    <td v-else>
+                        <input type="time" v-model="editAssignmentData.deadlineTime" class="form-control">
+                    </td>
+
+                    <!-- Action Buttons -->
+                    <td>
+                        <button v-if="editingAssignmentId !== assignment.id" @click="editAssignment(assignment)"
+                            class="btn btn-warning btn-sm">Edit</button>
+                        <button v-if="editingAssignmentId === assignment.id" @click="saveEdit"
+                            class="btn btn-success btn-sm">Save</button>
+                        <button v-if="editingAssignmentId === assignment.id" @click="cancelEdit"
+                            class="btn btn-secondary btn-sm">Cancel</button>
+                        <button @click="deleteAssignment(assignment)" class="btn btn-danger btn-sm">Delete</button>
+                    </td>
+                </tr>
+            </tbody>
+        </table>
+
+
+        <p v-if="assignments.length === 0 && selectedClass">No assignments available for {{ selectedClass }}</p>
+
+        <!-- Link to go to all the submitted files in the MongoDB storage -->
+        <a href="../view_homework.html" target="_blank" class="btn btn-primary mb-3">View Submitted Assignments</a>
+    </div>
+
+    <script type="module">
+        import { initializeApp, getApps } from "https://www.gstatic.com/firebasejs/11.0.1/firebase-app.js";
+        import { getFirestore, doc, getDoc, collection, getDocs, setDoc, Timestamp, deleteDoc } from "https://www.gstatic.com/firebasejs/11.0.1/firebase-firestore.js";
+        import { getAnalytics } from "https://www.gstatic.com/firebasejs/11.0.1/firebase-analytics.js";
+        import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/11.0.1/firebase-auth.js";
+
+
+        const firebaseConfig = {
+
+            authDomain: "edufly-61bfe.firebaseapp.com",
+            projectId: "edufly-61bfe",
+            storageBucket: "edufly-61bfe.appspot.com",
+            messagingSenderId: "467191151194",
+            appId: "1:467191151194:web:cac30fd47ebff5a7233663",
+            measurementId: "G-NQN411353D"
+        };
+        // Check if Firebase has already been initialized
+        const app = !getApps().length ? initializeApp(firebaseConfig) : getApps()[0];
+        const analytics = getAnalytics(app);
+        const db = getFirestore(app);
+        const auth = getAuth(app);
+
+        // Vue component
+        const vueApp = Vue.createApp({
+            data() {
+                return {
+                    classes: [],
+                    selectedClass: "",
+                    assignments: [],
+                    showAddAssignmentForm: false,
+                    newAssignment: { title: "", description: "", deadline: "" },
+                    editingAssignmentId: null,
+                    editAssignmentData: { title: "", description: "", deadlineDate: "", deadlineTime: "" }
+                };
+            },
+            async created() {
+                onAuthStateChanged(auth, async (user) => {
+                    if (user) {
+                        const userEmail = user.email;
+                        const docRef = doc(db, 'Teachers', userEmail);
+                        const docSnap = await getDoc(docRef);
+
+                        if (docSnap.exists()) {
+                            this.classes = docSnap.data().Classes;
+                        } else {
+                            console.log("No such document!");
+                        }
+                    } else {
+                        console.log("User not logged in.");
+                    }
+                });
+            },
+            methods: {
+                async fetchAssignments() {
+                    this.assignments = [];
+                    if (this.selectedClass) {
+                        const querySnapshot = await getDocs(collection(db, 'Classes', this.selectedClass, 'AssignmentList'));
+
+                        querySnapshot.forEach((doc) => {
+                            const data = doc.data();
+                            const { date, time } = this.formatFirestoreTimestamp(data.deadline);
+
+                            this.assignments.push({
+                                id: data.id,
+                                title: data.title,
+                                description: data.description,
+                                deadlineDate: date,
+                                deadlineTime: time
+                            });
+                        });
+                    }
+                },
+                formatFirestoreTimestamp(timestamp) {
+                    const date = timestamp.toDate();
+                    const formattedDate = `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, '0')}-${String(date.getDate()).padStart(2, '0')}`;
+                    const formattedTime = `${String(date.getHours()).padStart(2, '0')}:${String(date.getMinutes()).padStart(2, '0')}:${String(date.getSeconds()).padStart(2, '0')}`;
+                    return { date: formattedDate, time: formattedTime };
+                },
+                async addAssignment() {
+                    if (!this.selectedClass || !this.newAssignment.title || !this.newAssignment.description || !this.newAssignment.deadline) {
+                        alert("Please fill out all assignment fields.");
+                        return;
+                    }
+
+                    try {
+                        const assignmentsRef = collection(db, 'Classes', this.selectedClass, 'AssignmentList');
+                        const assignmentSnapshot = await getDocs(assignmentsRef);
+                        const nextId = assignmentSnapshot.size + 1;
+
+                        const deadlineDate = new Date(this.newAssignment.deadline);
+                        const deadlineTimestamp = new Timestamp(deadlineDate.getTime() / 1000, 0);
+
+                        const newAssignmentRef = doc(assignmentsRef, `assignment${nextId}`);
+                        await setDoc(newAssignmentRef, {
+                            id: nextId,
+                            title: this.newAssignment.title,
+                            description: this.newAssignment.description,
+                            deadline: deadlineTimestamp
+                        });
+
+                        this.fetchAssignments();
+                        this.newAssignment = { title: "", description: "", deadline: "" };
+                        this.showAddAssignmentForm = false;
+                        alert("Assignment added successfully!");
+                    } catch (error) {
+                        console.error("Error adding assignment: ", error);
+                    }
+                },
+                editAssignment(assignment) {
+                    this.editingAssignmentId = assignment.id;
+                    this.editAssignmentData = {
+                        title: assignment.title,
+                        description: assignment.description,
+                        deadlineDate: assignment.deadlineDate,
+                        deadlineTime: assignment.deadlineTime
+                    };
+                },
+                async saveEdit() {
+                    if (!this.editAssignmentData.title || !this.editAssignmentData.description || !this.editAssignmentData.deadlineDate || !this.editAssignmentData.deadlineTime) {
+                        alert("Please fill out all fields before saving.");
+                        return;
+                    }
+
+                    try {
+                        const assignmentRef = doc(db, 'Classes', this.selectedClass, 'AssignmentList', `assignment${this.editingAssignmentId}`);
+
+                        // Convert date and time inputs to a Firestore Timestamp
+                        const deadlineDate = new Date(`${this.editAssignmentData.deadlineDate}T${this.editAssignmentData.deadlineTime}`);
+                        const deadlineTimestamp = new Timestamp(deadlineDate.getTime() / 1000, 0);
+
+                        await setDoc(assignmentRef, {
+                            title: this.editAssignmentData.title,
+                            description: this.editAssignmentData.description,
+                            deadline: deadlineTimestamp
+                        }, { merge: true });
+
+                        this.fetchAssignments();
+                        this.editingAssignmentId = null;
+                        alert("Assignment updated successfully!");
+                    } catch (error) {
+                        console.error("Error updating assignment: ", error);
+                    }
+                },
+                cancelEdit() {
+                    this.editingAssignmentId = null;
+                    this.editAssignmentData = { title: "", description: "", deadlineDate: "", deadlineTime: "" };
+                },
+                async deleteAssignment(assignment) {
+                    try {
+                        const assignmentRef = doc(db, 'Classes', this.selectedClass, 'AssignmentList', `assignment${assignment.id}`);
+                        await deleteDoc(assignmentRef);
+
+                        this.fetchAssignments();
+                        alert("Assignment deleted successfully!");
+                    } catch (error) {
+                        console.error("Error deleting assignment: ", error);
+                    }
+                }
+            }
+        });
+
+        vueApp.mount('#app');
+
+
+    </script>
+
+
+</body>
+
+</html>

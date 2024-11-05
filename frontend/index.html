@@ -1,32 +1,131 @@
 <!DOCTYPE html>
 <html lang="en">
-
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <!-- Bootstrap JS bundle to be placed before the closing </body> tag -->
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet"
-        integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH" crossorigin="anonymous">
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3/dist/js/bootstrap.bundle.min.js"></script>
-    <!-- Vue 3 -->
-    <script src="https://unpkg.com/vue@3/dist/vue.global.js"></script>
-
-    <title>EduFly Portal</title>
+    <title>EduFly</title>
+    <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
     <style>
         .navbar {
             background-color: green;
         }
+        .hero-image {
+            background-image: url('./img/hero.avif');
+            background-size: cover;
+            background-position: center;
+            height: 400px;
+            position: relative;
+        }
+        .hero-text {
+            position: absolute;
+            bottom: 0;
+            width: 100%;
+            color: white;
+            text-align: center;
+            background-color: rgba(0, 0, 0, 0.5);
+            padding: 20px;
+        }
+        .hero-text h1 {
+            font-size: 3rem;
+        }
+        .buttons {
+            text-align: center;
+            margin-top: 20px;
+        }
+        .carousel-inner img {
+            height: 400px;
+            object-fit: cover;
+        }
     </style>
-
 </head>
-
 <body>
-   
-hello
- <!-- Link to go to all the submitted files in the MongoDB storage -->
- <a href="./view_homework.html" target="_blank" class="btn btn-primary mb-3">View Submitted Assignments</a>
-    
+    <nav class="navbar navbar-expand-lg navbar-dark">
+        <a class="navbar-brand" href="index.html">
+            <img src="./img/icon.png" alt="Logo" class="d-inline-block align-top" style="height: 30px; width: auto;">
+            EduFly
+        </a>
+        <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+            <span class="navbar-toggler-icon"></span>
+        </button>
+        <div class="collapse navbar-collapse" id="navbarNav">
+            <ul class="navbar-nav ml-auto">
+                <li class="nav-item">
+                    <a class="nav-link" href="#">About Us</a>
+                </li>
+            </ul>
+        </div>
+    </nav>
 
+    <div class="hero-image">
+        <div class="hero-text">
+            <h1>All your school resources. All in one place.</h1>
+            <p>Select a button below to get started </p>
+        </div>
+    </div>
+
+    <div class="buttons">
+        <button type="button" class="btn btn-primary btn-lg">&#128104;&#8205;&#127891; Student</button>
+        <a href="Login Page/login_teacher.html"><button type="button" class="btn btn-secondary btn-lg">&#128105;&#8205;&#127979; Teacher</button></a> 
+    </div>
+    <div class="container mt-5 mb-5">
+        <div class="row">
+            <div class="col-md-12">
+                <h2 class="text-center">Features</h2>
+                <p class="text-center">Explore the features of EduFly that make both learning and teaching easier</p>
+            </div>
+        </div>
+        <div id="featuresCarousel" class="carousel slide" data-ride="carousel" data-interval="3000" data-pause="hover">
+            <ol class="carousel-indicators">
+            <li data-target="#featuresCarousel" data-slide-to="0" class="active"></li>
+            <li data-target="#featuresCarousel" data-slide-to="1"></li>
+            <li data-target="#featuresCarousel" data-slide-to="2"></li>
+            <li data-target="#featuresCarousel" data-slide-to="3"></li>
+            </ol>
+            <div class="carousel-inner">
+            <div class="carousel-item active">
+                <img src="./img/hero.avif" class="d-block w-100" alt="Feature 1">
+                <div class="carousel-caption d-md-block" style="background-color: rgba(0, 0, 0, 0.5); border: 2px solid rgba(255, 255, 255, 0.5); border-radius: 10px;">
+                <h5>Homework Tracker</h5>
+                <p>Students can view the homework they were assigned and upload them.<br>Teachers can track who has and hasn't submitted their homework.</p>
+                </div>
+            </div>
+            <div class="carousel-item">
+                <img src="./img/teachers.avif" class="d-block w-100" alt="Feature 2">
+                <div class="carousel-caption d-md-block" style="background-color: rgba(0, 0, 0, 0.5); border: 2px solid rgba(255, 255, 255, 0.5); border-radius: 10px;">
+                <h5>Timetable with Google Calendar Integration</h5>
+                <p>Students can view upcoming school events such as learning journeys.<br>Teachers can create new events without ever having to leave EduFly.</p>
+                </div>
+            </div>
+            <div class="carousel-item">
+                <img src="./img/students.jpg" class="d-block w-100" alt="Feature 3">
+                <div class="carousel-caption d-md-block" style="background-color: rgba(0, 0, 0, 0.5); border: 2px solid rgba(255, 255, 255, 0.5); border-radius: 10px;">
+                <h5>Academic Dashboard</h5>
+                <p>Students can view their grades and visualize how they're doing.<br>Teachers can manage grades and check attendance.</p>
+                </div>
+            </div>
+            <div class="carousel-item">
+                <img src="./img/staff.jpeg" class="d-block w-100" alt="Feature 4">
+                <div class="carousel-caption d-md-block" style="background-color: rgba(0, 0, 0, 0.5); border: 2px solid rgba(255, 255, 255, 0.5); border-radius: 10px;">
+                <h5>Announcements and Notifications</h5>
+                <p>Students can view important announcements such as change in class time.<br>Teachers can make make new announcements to ensure students stay informed.</p>
+                </div>
+            </div>
+            </div>
+            <a class="carousel-control-prev" href="#featuresCarousel" role="button" data-slide="prev">
+            <span class="carousel-control-prev-icon" aria-hidden="true"></span>
+            <span class="sr-only">Previous</span>
+            </a>
+            <a class="carousel-control-next" href="#featuresCarousel" role="button" data-slide="next">
+            <span class="carousel-control-next-icon" aria-hidden="true"></span>
+            <span class="sr-only">Next</span>
+            </a>
+        </div>
+    </div>
+    <footer class="text-center mt-5">
+        <p>&copy; 2024 EduFly. Makes being in school a breeze.</p>
+    </footer>
+    <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.5.4/dist/umd/popper.min.js"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
 </body>
-
 </html>

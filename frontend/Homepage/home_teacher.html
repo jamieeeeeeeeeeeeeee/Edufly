@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <!-- Bootstrap JS bundle to be placed before the closing </body> tag -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet"
+        integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH" crossorigin="anonymous">
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3/dist/js/bootstrap.bundle.min.js"></script>
+    <!-- Vue 3 -->
+    <script src="https://unpkg.com/vue@3/dist/vue.global.js"></script>
+
+    <title>EduFly Portal</title>
+    <style>
+        .navbar {
+            background-color: green;
+        }
+    </style>
+
+</head>
+
+<body class="whole">
+    <nav class="navbar navbar-expand-lg navbar-dark">
+        <a class="navbar-brand" href="../Homepage/home_teacher.html">
+            <img src="../img/icon.png" alt="Logo" class="d-inline-block align-top" style="height: 30px; width: auto;">
+            EduFly
+        </a>
+        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav"
+            aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+            <span class="navbar-toggler-icon"></span>
+        </button>
+        <div class="collapse navbar-collapse" id="navbarNav">
+            <ul class="navbar-nav ml-auto">
+                <li class="nav-item">
+                    <a class="nav-link" id="profileLink" href="./profile.html">Profile</a> <!-- Updated link with label -->
+                </li>
+                <li class="nav-item">
+                    <button id="logout-btn" class="btn btn-primary">&#128682; Log Out</button>
+                </li>
+            </ul>
+            <ul class="navbar-nav ms-auto">
+                <li class="nav-item">
+                    <span id="account_type" class="nav-link"></span>
+                </li>
+            </ul>
+        </div>
+    </nav>
+    
+    <div class="container-fluid">
+        <div class="row text-center mt-5" style="background-color:#8F8073">
+            <h1 id="Welcome"></h1>
+            <h3 class="pt-2">What would you like to do today?</h3>
+        </div>
+
+        <div class="row mt-5">
+            <div class="col-1"></div>
+            <div class="col-10 functions">
+                <div class="d-grid gap-3 text-center">
+                    <a href="../Homework Tracker/AssignmentList.html" class="btn btn-lg btn-success">
+                        <span style="font-size: 2em;">&#9997;&#65039;</span>
+                        <br>
+                        <span style="font-size: 1.2em;">Homework and Task Management</span>
+                    </a>
+                    <a href="../../Teacher/ryantest.html" class="btn btn-lg btn-success">
+                        <span style="font-size: 2em;">&#128467;&#65039;</span>
+                        <br>
+                        <span style="font-size: 1.2em;">Dynamic Timetable</span>
+                    </a>
+                    <a href="../Academic Dashboard/StudentList1.html" class="btn btn-lg btn-success">
+                        <span style="font-size: 2em;">&#127891;</span>
+                        <br>
+                        <span style="font-size: 1.2em;">Academic Dashboard</span>
+                    </a>
+                    <a href="../Announcement/AnnouncementPage.html" class="btn btn-lg btn-success">
+                        <span style="font-size: 2em;">&#128226;</span>
+                        <br>
+                        <span style="font-size: 1.2em;">Announcements and Notifications</span>
+                    </a>
+                </div>
+            </div>
+            <div class="col-1"></div>
+        </div>
+    </div>
+
+
+    <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.5.4/dist/umd/popper.min.js"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+    <script type="module" src="../update.js"></script>
+
+    
+
+</body>
+
+</html>
