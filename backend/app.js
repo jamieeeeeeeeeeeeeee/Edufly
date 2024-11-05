@@ -14,7 +14,14 @@ async function startServer() {
         // Connect to both databases
         const homeworkConnection = await connectHomeworkDB();
         const medicalCertificateConnection = await connectMedicalCertificateDB();
-
+        app.use((req, res, next) => { 
+            res.setHeader('Access-Control-Allow-Origin', '*'); 
+            res.setHeader('Access-Control-Allow-Methods', 'GET, POST, OPTIONS, PUT, PATCH, DELETE'); 
+            res.setHeader('Access-Control-Allow-Headers', 'X-Requested-With,Content-Type,Authorization'); 
+            res.setHeader('Access-Control-Allow-Credentials', true); // Pass to next layer of middleware 
+            if (req.method === 'OPTIONS') res.sendStatus(200); 
+            else next(); 
+        });
         // Pass connections to routes if needed
         app.use('/api', homeworkRoutes(homeworkConnection));
         app.use('/api', medicalCertificateRoutes(medicalCertificateConnection));
