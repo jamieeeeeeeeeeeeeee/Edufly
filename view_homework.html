@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>View Uploaded Homework</title>
+    <link href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
+    <script src="https://unpkg.com/vue@3/dist/vue.global.js"></script>
+</head>
+
+<body class="bg-light">
+    <div class="container mt-5">
+        <h3 class="text-center mb-4">Uploaded Homework</h3>
+        <label for="classSelect" class="form-label">Select Class:</label>
+        <div id="app">
+            <select v-model="selectedClass" @change="loadHomework" id="classSelect" class="form-select mb-4">
+                <option value="" disabled>Select a class</option>
+                <option v-for="className in classes" :key="className" :value="className">
+                    {{ className }}
+                </option>
+            </select>
+        </div>
+        <div id="homeworkList" class="list-group shadow-sm"></div>
+    </div>
+    <script type="module" src="js/viewHomework.js"></script>
+</body>
+
+</html>
