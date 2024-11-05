@@ -6,8 +6,8 @@ const homeworkRoutes = require('./routes/homeworkRoutes');
 const medicalCertificateRoutes = require('./routes/medicalCertificateRoutes');
 
 const app = express();
-app.use(cors());
-app.use(express.json());
+// app.use(cors());
+// app.use(express.json());
 
 async function startServer() {
     try {
@@ -15,7 +15,7 @@ async function startServer() {
         const homeworkConnection = await connectHomeworkDB();
         const medicalCertificateConnection = await connectMedicalCertificateDB();
         const options = [ cors({ origin: '*', methods: '*', allowedHeaders: ['Content-Type', 'Authorization'], credentials: true, }) ];
-
+        app.use(options);
         // app.use((req, res, next) => { 
         //     res.setHeader('Access-Control-Allow-Origin', '*'); 
         //     res.setHeader('Access-Control-Allow-Methods', 'GET, POST, OPTIONS, PUT, PATCH, DELETE'); 
