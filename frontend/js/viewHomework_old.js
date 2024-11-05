@@ -12,7 +12,7 @@ async function loadHomework() {
             homeworks.forEach(hw => {
                 const item = document.createElement('a');
                 item.className = "list-group-item list-group-item-action";
-                item.href = `http://localhost:5000/api/homeworks/${hw._id}`;
+                item.href = `https://test-mongo-in6ge6b0w-jamies-projects-ac80ffa6.vercel.app/api/homeworks/${hw._id}`;
                 item.target = "_blank";
                 item.innerHTML = `
                     <strong>${hw.fileName}</strong> <br>

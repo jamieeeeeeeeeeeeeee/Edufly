@@ -11,7 +11,7 @@ document.getElementById('medicalForm').addEventListener('submit', async (e) => {
 
     const messageDiv = document.getElementById('message');
     try {
-        const response = await fetch('http://localhost:5000/api/upload-medical', {
+        const response = await fetch('https://test-mongo-in6ge6b0w-jamies-projects-ac80ffa6.vercel.app/api/upload-medical', {
             method: 'POST',
             body: formData
         });
