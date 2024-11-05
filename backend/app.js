@@ -14,7 +14,7 @@ async function startServer() {
         // Connect to both databases
         const homeworkConnection = await connectHomeworkDB();
         const medicalCertificateConnection = await connectMedicalCertificateDB();
-        const options = [ cors({ origin: '*', methods: '*', allowedHeaders: ['Content-Type', 'Authorization'], credentials: true, }) ];
+        const options = [ cors({ origin: 'https://test-mongo-db-6aus.vercel.app', methods: '*', allowedHeaders: ['Content-Type', 'Authorization'], credentials: true, }) ];
         app.use(options);
         // app.use((req, res, next) => { 
         //     res.setHeader('Access-Control-Allow-Origin', '*'); 
