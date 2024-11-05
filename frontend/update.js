@@ -5,7 +5,7 @@ import { getAuth, onAuthStateChanged, signOut } from "https://www.gstatic.com/fi
 
 // Firebase configuration
 const firebaseConfig = {
-    
+    apiKey: "AIzaSyBkep4kR1KlxAHUQM8-dJo-b0cOjUA1tCc",
     authDomain: "edufly-61bfe.firebaseapp.com",
     projectId: "edufly-61bfe",
     storageBucket: "edufly-61bfe.firebasestorage.app",

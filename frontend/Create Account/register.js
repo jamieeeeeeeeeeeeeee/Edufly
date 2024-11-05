@@ -8,7 +8,7 @@ import { getAuth, createUserWithEmailAndPassword } from "https://www.gstatic.com
 // Your web app's Firebase configuration
 // For Firebase JS SDK v7.20.0 and later, measurementId is optional
 const firebaseConfig = {
-
+  apiKey: "AIzaSyBkep4kR1KlxAHUQM8-dJo-b0cOjUA1tCc",
   authDomain: "edufly-61bfe.firebaseapp.com",
   projectId: "edufly-61bfe",
   storageBucket: "edufly-61bfe.firebasestorage.app",
