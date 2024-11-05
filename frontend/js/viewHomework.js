@@ -64,7 +64,7 @@ const vueApp = Vue.createApp({
                         if (hw.sectionId === this.selectedClass) { // Use this.selectedClass
                             const item = document.createElement('a');
                             item.className = "list-group-item list-group-item-action";
-                            item.href = `http:s://test-mongo-in6ge6b0w-jamies-projects-ac80ffa6.vercel.app/api/homeworks/${hw._id}`;
+                            item.href = `https://test-mongo-in6ge6b0w-jamies-projects-ac80ffa6.vercel.app/api/homeworks/${hw.sectionId}`;
                             item.target = "_blank";
                             item.innerHTML = `
                                 <strong>${hw.fileName}</strong> <br>
