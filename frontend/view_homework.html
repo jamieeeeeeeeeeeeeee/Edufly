@@ -13,10 +13,6 @@
     <div class="container mt-5">
         <h3 class="text-center mb-4">Uploaded Homework</h3>
 
-          <!-- Display the selected class name -->
-          <p v-model="selectedClass" class="text-center"> {{ selectedClass }}</p>
-
-
             <!-- Homework List
             <div id="homeworkList" v-if="homeworkList.length" class="list-group shadow-sm">
                 <a v-for="homework in homeworkList" :key="homework.id" href="#" class="list-group-item list-group-item-action">
@@ -29,6 +25,7 @@
         </div> -->
          <!-- Homework List (Vue binding) -->
          <div id="app">
+            <p v-if="selectedClass" class="text-center"> {{ selectedClass }}</p>
             <!-- Only show the homework list if there are any items -->
             <div v-if="homeworkList.length > 0" class="list-group shadow-sm">
                 <a v-for="homework in homeworkList" :key="homework.id" href="#" class="list-group-item list-group-item-action">
