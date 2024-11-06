@@ -179,42 +179,55 @@
                 };
             },
             async created() {
-                onAuthStateChanged(auth, async (user) => {
-                    if (user) {
-                        const userEmail = user.email;
-                        const docRef = doc(db, 'Teachers', userEmail);
-                        const docSnap = await getDoc(docRef);
+            onAuthStateChanged(auth, async (user) => {
+                if (user) {
+                    const userEmail = user.email;
+                    const docRef = doc(db, 'Teachers', userEmail);
+                    const docSnap = await getDoc(docRef);
 
-                        if (docSnap.exists()) {
-                            this.classes = docSnap.data().Classes;
-                        } else {
-                            console.log("No such document!");
-                        }
+                    if (docSnap.exists()) {
+                        this.classes = docSnap.data().Classes;
                     } else {
-                        console.log("User not logged in.");
+                        console.log("No such document!");
                     }
-                });
-            },
+                } else {
+                    console.log("User not logged in.");
+                }
+            });
+
+            // Check if there is a class parameter in the URL and set it as selectedClass
+            const urlParams = new URLSearchParams(window.location.search);
+            const classParam = urlParams.get('class');
+            if (classParam) {
+                this.selectedClass = classParam;
+                this.fetchAssignments();
+            }
+        },
             methods: {
                 async fetchAssignments() {
-                    this.assignments = [];
-                    if (this.selectedClass) {
-                        const querySnapshot = await getDocs(collection(db, 'Classes', this.selectedClass, 'AssignmentList'));
+                this.assignments = [];
+                if (this.selectedClass) {
+                    // Update the URL with the selected class as a query parameter
+                    const url = new URL(window.location.href);
+                    url.searchParams.set('class', this.selectedClass);
+                    window.history.pushState({}, '', url);
 
-                        querySnapshot.forEach((doc) => {
-                            const data = doc.data();
-                            const { date, time } = this.formatFirestoreTimestamp(data.deadline);
+                    const querySnapshot = await getDocs(collection(db, 'Classes', this.selectedClass, 'AssignmentList'));
 
-                            this.assignments.push({
-                                id: data.id,
-                                title: data.title,
-                                description: data.description,
-                                deadlineDate: date,
-                                deadlineTime: time
-                            });
+                    querySnapshot.forEach((doc) => {
+                        const data = doc.data();
+                        const { date, time } = this.formatFirestoreTimestamp(data.deadline);
+
+                        this.assignments.push({
+                            id: data.id,
+                            title: data.title,
+                            description: data.description,
+                            deadlineDate: date,
+                            deadlineTime: time
                         });
-                    }
-                },
+                    });
+                }
+            },
                 formatFirestoreTimestamp(timestamp) {
                     const date = timestamp.toDate();
                     const formattedDate = `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, '0')}-${String(date.getDate()).padStart(2, '0')}`;
