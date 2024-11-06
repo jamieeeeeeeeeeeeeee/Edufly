@@ -68,7 +68,8 @@
         <!-- Date Selector for Attendance -->
         <div class="mb-3">
             <label for="attendanceDate" class="form-label">Select Date:</label>
-            <input type="date" v-model="attendanceDate" id="attendanceDate" class="form-control">
+            <input type="date" v-model="attendanceDate" id="attendanceDate" class="form-control" style="display: inline-block; width: auto;">
+            <button class="btn btn-primary ms-2" @click="fetchAttendance">GO</button>
         </div>
 
         <table class="table table-striped">
@@ -109,7 +110,6 @@
             </tbody>
         </table>
 
-
         <p v-if="students.length === 0 && selectedClass">No students available for {{ selectedClass }}</p>
     </div>
 
@@ -129,31 +129,25 @@
             measurementId: "G-NQN411353D"
         };
 
-        // Check if Firebase has already been initialized
         const app = !getApps().length ? initializeApp(firebaseConfig) : getApps()[0];
         const analytics = getAnalytics(app);
         const db = getFirestore(app);
         const auth = getAuth(app);
-
 
         const vueApp = Vue.createApp({
             data() {
                 return {
                     selectedClass: "",
                     students: [],
-                    attendanceDate: new Date().toISOString().substr(0, 10), // Default to today
+                    attendanceDate: new Date().toISOString().substr(0, 10),
                 };
             },
             async created() {
-                // Get the selected class from the URL if it exists
                 const urlParams = new URLSearchParams(window.location.search);
                 const classFromUrl = urlParams.get('class');
-
                 if (classFromUrl) {
                     this.selectedClass = classFromUrl;
                     await this.fetchStudents();
-                } else {
-                    console.log("No class specified in the URL.");
                 }
             },
             methods: {
@@ -161,18 +155,14 @@
                     this.students = [];
                     if (this.selectedClass) {
                         const querySnapshot = await getDocs(collection(db, 'Classes', this.selectedClass, 'StudentList'));
-
                         querySnapshot.forEach((doc) => {
                             this.students.push({
                                 studentId: doc.data().StudentID,
                                 Fname: doc.data().FName,
                                 Lname: doc.data().LName,
-                                attendanceStatus: null // Initialize attendance status
+                                attendanceStatus: null
                             });
                         });
-
-                        // Fetch attendance data for the selected date
-                        this.fetchAttendance();
                     }
                 },
                 async fetchAttendance() {
@@ -185,9 +175,11 @@
                         if (attendanceSnap.exists()) {
                             const attendanceData = attendanceSnap.data();
                             this.students.forEach(student => {
-                                if (attendanceData[student.studentId]) {
-                                    student.attendanceStatus = attendanceData[student.studentId].status;
-                                }
+                                student.attendanceStatus = attendanceData[student.studentId]?.status || null;
+                            });
+                        } else {
+                            this.students.forEach(student => {
+                                student.attendanceStatus = null;
                             });
                         }
                     } catch (error) {
@@ -201,10 +193,7 @@
                     }
 
                     try {
-                        // Reference to the attendance document for the selected date
                         const attendanceRef = doc(db, 'Classes', this.selectedClass, 'Attendance', this.attendanceDate);
-
-                        // Use setDoc to create or update the attendance document
                         await setDoc(attendanceRef, {
                             [student.studentId]: {
                                 Fname: student.Fname,
@@ -213,23 +202,15 @@
                                 date: this.attendanceDate
                             }
                         }, { merge: true });
-
-                        // Update the student's attendance status in the local array
                         student.attendanceStatus = status;
-
-                        alert(`Marked ${student.Fname} as ${status} for ${this.attendanceDate}`);
                     } catch (error) {
                         console.error("Error marking attendance: ", error);
                     }
                 }
             }
-
         });
 
         vueApp.mount('#app');
     </script>
-
-
 </body>
-
 </html>
