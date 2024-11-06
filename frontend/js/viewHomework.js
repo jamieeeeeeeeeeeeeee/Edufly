@@ -24,9 +24,12 @@ const vueApp = Vue.createApp({
         return {
             classes: [],
             selectedClass: "",
+            homeworkList: [],
         };
     },
     async created() {
+        const urlParams = new URLSearchParams(window.location.search);
+        this.selectedClass = urlParams.get('class') || "";
         // Check for user authentication and fetch classes
         onAuthStateChanged(auth, async (user) => {
             if (user) {
