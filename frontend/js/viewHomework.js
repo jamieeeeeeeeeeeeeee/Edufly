@@ -29,7 +29,8 @@ const vueApp = Vue.createApp({
     },
     async created() {
         const urlParams = new URLSearchParams(window.location.search);
-        this.selectedClass = urlParams.get('class') || "";
+this.selectedClass = urlParams.get('class');
+
         // Check for user authentication and fetch classes
         onAuthStateChanged(auth, async (user) => {
             if (user) {
