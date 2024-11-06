@@ -12,6 +12,11 @@
 <body class="bg-light">
     <div class="container mt-5">
         <h3 class="text-center mb-4">Uploaded Homework</h3>
+        
+        <!-- Display Selected Class -->
+        <p v-if="selectedClass" class="text-center">Class: {{ selectedClass }}</p>
+
+        <!-- Class Selection Dropdown -->
         <label for="classSelect" class="form-label">Select Class:</label>
         <div id="app">
             <select v-model="selectedClass" @change="loadHomework" id="classSelect" class="form-select mb-4">
@@ -20,8 +25,17 @@
                     {{ className }}
                 </option>
             </select>
+
+            <!-- Homework List -->
+            <div id="homeworkList" v-if="homeworkList.length" class="list-group shadow-sm">
+                <a v-for="homework in homeworkList" :key="homework.id" href="#" class="list-group-item list-group-item-action">
+                    <h5 class="mb-1">{{ homework.title }}</h5>
+                    <p class="mb-1">{{ homework.description }}</p>
+                    <small>Submitted by: {{ homework.studentName }}</small>
+                </a>
+            </div>
+            <p v-else class="text-center">No homework uploaded for {{ selectedClass }}</p>
         </div>
-        <div id="homeworkList" class="list-group shadow-sm"></div>
     </div>
     <script type="module" src="js/viewHomework.js"></script>
 </body>
