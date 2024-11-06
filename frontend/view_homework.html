@@ -13,17 +13,11 @@
     <div class="container mt-5">
         <h3 class="text-center mb-4">Uploaded Homework</h3>
 
-        <!-- Class Selection Dropdown -->
-        <label for="classSelect" class="form-label">Select Class:</label>
-        <div id="app">
-            <select v-model="selectedClass" @change="loadHomework" id="classSelect" class="form-select mb-4">
-                <option value="" disabled>Select a class</option>
-                <option v-for="className in classes" :key="className" :value="className">
-                    {{ className }}
-                </option>
-            </select>
+          <!-- Display the selected class name -->
+          <p v-if="selectedClass" class="text-center">Class: {{ selectedClass }}</p>
 
-            <!-- Homework List -->
+
+            <!-- Homework List
             <div id="homeworkList" v-if="homeworkList.length" class="list-group shadow-sm">
                 <a v-for="homework in homeworkList" :key="homework.id" href="#" class="list-group-item list-group-item-action">
                     <h5 class="mb-1">{{ homework.title }}</h5>
@@ -31,6 +25,18 @@
                     <small>Submitted by: {{ homework.studentName }}</small>
                 </a>
             </div>
+            <p v-else class="text-center">No homework uploaded for {{ selectedClass }}</p>
+        </div> -->
+         <!-- Homework List (Vue binding) -->
+         <div id="app">
+            <!-- Only show the homework list if there are any items -->
+            <div v-if="homeworkList.length > 0" class="list-group shadow-sm">
+                <a v-for="homework in homeworkList" :key="homework.id" href="#" class="list-group-item list-group-item-action">
+                    <h5 class="mb-1">{{ homework.fileName }}</h5>
+                    <p class="mb-1">Uploaded by: {{ homework.studentId }} from {{ homework.sectionId }} on {{ new Date(homework.uploadedAt).toLocaleString() }}</p>
+                </a>
+            </div>
+            <!-- Message when no homework is found -->
             <p v-else class="text-center">No homework uploaded for {{ selectedClass }}</p>
         </div>
     </div>

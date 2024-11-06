@@ -48,10 +48,10 @@ const vueApp = Vue.createApp({
         });
     },
     methods: {
-        logSelectedClass() {
-            console.log(this.classes);
-            console.log(this.selectedClass); // Log the selected class to the console
-        },
+        // logSelectedClass() {
+        //     console.log(this.classes);
+        //     console.log(this.selectedClass); // Log the selected class to the console
+        // },
         async loadHomework() {
             try {
                 const response = await fetch('https://test-mongo-in6ge6b0w-jamies-projects-ac80ffa6.vercel.app/api/homeworks', {
@@ -88,7 +88,7 @@ const vueApp = Vue.createApp({
     },
     watch: {
         selectedClass(newClass) {
-            this.logSelectedClass(); // Log the selected class whenever it changes
+            // this.logSelectedClass(); // Log the selected class whenever it changes
             this.loadHomework(); // Call loadHomework when selectedClass changes
         }
     }
