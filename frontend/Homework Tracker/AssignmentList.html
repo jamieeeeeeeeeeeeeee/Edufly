@@ -67,7 +67,7 @@
             {{ showAddAssignmentForm ? 'Cancel' : 'Add Assignment' }}
         </button>
         <!-- <a v-if="assignments.length > 0 && selectedClass" href="../view_homework.html" target="_blank" class="btn btn-info mb-3">View Submitted Assignments</a> -->
-        <button><a v-id="assignments.length > 0 && selectedClass" :href="`./view_homework.html?class=${selectedClass}`" target="_blank" class="btn btn-info mb-3">
+        <button v-if="selectedClass" class="btn btn-info mb-3"><a v-id="assignments.length > 0 && selectedClass" :href="`./view_homework.html?class=${selectedClass}`" target="_blank">
             View Submitted Assignments
         </a></button>
 
