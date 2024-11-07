@@ -80,7 +80,8 @@
                     </td>
                 </tr>
                 <tr>
-                    <button v-if="students.length > 0 && selectedClass" class="btn btn-primary mt-3" @click="saveAllScores">Save Grades</button>
+                    <button v-if="students.length > 0 && selectedClass" class="btn btn-primary mt-3"
+                        @click="saveAllScores">Save Grades</button>
                 </tr>
             </tbody>
         </table>
@@ -89,7 +90,7 @@
     </div>
 
     <script type="module">
-
+        import { auth, db, onAuthStateChanged, getFirestore, doc, getDoc, collection, getDocs, setDoc, addDoc, deleteDoc } from '../js/database.js';
         const vueApp = Vue.createApp({
             data() {
                 return {
