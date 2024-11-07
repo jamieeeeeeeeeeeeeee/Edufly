@@ -1,0 +1,194 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Google Calendar Viewer</title>
+    <style>
+        body { font-family: Arial, sans-serif; display: flex; flex-direction: column; align-items: center; margin: 50px; }
+        #signin-button, #signout-button { padding: 10px 20px; background-color: #4285F4; color: white; border: none; border-radius: 5px; cursor: pointer; font-size: 16px; margin-top: 20px; }
+        #calendar-events { margin-top: 30px; max-width: 600px; text-align: left; }
+        #calendar-events h2 { color: #333; }
+        .event { margin-bottom: 15px; padding: 10px; border: 1px solid #ddd; border-radius: 5px; }
+    </style>
+    <script src="https://accounts.google.com/gsi/client" async defer></script>
+    <script src="https://apis.google.com/js/api.js"></script>
+
+
+
+
+    <style>
+        #calendar-events {
+            width: 100%;  /* Make the calendar width 100% */
+            max-width: 900px; /* Optional: set a maximum width */
+            margin: 0 auto; /* Center the calendar */
+        }
+    </style>
+
+
+
+
+    <link href="https://cdn.jsdelivr.net/npm/fullcalendar@5.10.1/main.min.css" rel="stylesheet" />
+<script src="https://cdn.jsdelivr.net/npm/fullcalendar@5.10.1/main.min.js"></script>
+</head>
+<body>
+    <h1>Google Calendar Events</h1>
+    <div id="signin-button" style="display: block;"></div>
+    <button id="signout-button" style="display:none;" onclick="handleSignOut()">Sign out</button>
+    <div id="calendar-events"></div>
+
+    <script>
+        const CLIENT_ID = '253069344619-3irs1nn3r35c9cfrt1qepmhqqt2gclqc.apps.googleusercontent.com';
+        const API_KEY = 'AIzaSyBG28vCzNwcnGuzntrefL_Qxe2CGGBe0lc';
+        const SCOPES = 'https://www.googleapis.com/auth/calendar.readonly';
+
+        let tokenClient;
+
+        // Load GAPI client for Google Calendar API
+        function gapiLoaded() {
+            gapi.load('client', initializeGapiClient);
+        }
+
+        async function initializeGapiClient() {
+            await gapi.client.init({
+                apiKey: API_KEY,
+                discoveryDocs: ["https://www.googleapis.com/discovery/v1/apis/calendar/v3/rest"],
+            });
+            console.log("GAPI client initialized.");
+        }
+
+        // Load Google Identity Services for Sign-In
+        function gisLoaded() {
+            tokenClient = google.accounts.oauth2.initTokenClient({
+                client_id: CLIENT_ID,
+                scope: SCOPES,
+                callback: handleAuthSuccess,
+            });
+
+            // Render Sign-In button
+            google.accounts.id.renderButton(
+    document.getElementById("signin-button"),
+    { theme: 'outline', size: 'large', type: 'standard', shape: 'pill' }
+);
+document.getElementById("signin-button").innerHTML += " Sign in with Google"; // Add text
+
+            document.getElementById("signin-button").onclick = () => {
+                tokenClient.requestAccessToken();
+            };
+        }
+
+        function handleAuthSuccess(tokenResponse) {
+            console.log("Authentication successful.");
+            document.getElementById("signin-button").style.display = "none";
+            document.getElementById("signout-button").style.display = "block";
+            loadCalendarEvents();
+        }
+
+        function handleSignOut() {
+    console.log("Signing out...");
+    // Check if access_token exists before trying to revoke it
+    if (tokenClient.credentials && tokenClient.credentials.access_token) {
+        google.accounts.oauth2.revoke(tokenClient.credentials.access_token, () => {
+            console.log("Access token revoked.");
+            tokenClient.credentials.access_token = ''; // Clear the token
+            document.getElementById("calendar-events").innerHTML = ""; // Clear events
+            document.getElementById("signin-button").style.display = "block"; // Show sign-in button
+            document.getElementById("signout-button").style.display = "none"; // Hide sign-out button
+        });
+    } else {
+        console.log("No access token to revoke. User may not be signed in.");
+        document.getElementById("calendar-events").innerHTML = ""; // Clear events if no token
+        document.getElementById("signin-button").style.display = "block"; // Show sign-in button
+        document.getElementById("signout-button").style.display = "none"; // Hide sign-out button
+    }
+}
+
+        // async function loadCalendarEvents() {
+        //     try {
+        //         const response = await gapi.client.calendar.events.list({
+        //             'calendarId': 'primary',
+        //             'timeMin': (new Date()).toISOString(),
+        //             'showDeleted': false,
+        //             'singleEvents': true,
+        //             'maxResults': 10,
+        //             'orderBy': 'startTime'
+        //         });
+        //         const events = response.result.items;
+        //         const calendarDiv = document.getElementById("calendar-events");
+        //         calendarDiv.innerHTML = '<h2>Your Upcoming Events</h2>';
+
+        //         if (events.length > 0) {
+        //             events.forEach(event => {
+        //                 const eventElement = document.createElement("div");
+        //                 eventElement.classList.add("event");
+
+        //                 const startTime = event.start.dateTime || event.start.date;
+        //                 eventElement.innerHTML = `<strong>${event.summary}</strong><br><small>${new Date(startTime).toLocaleString()}</small>`;
+                        
+        //                 calendarDiv.appendChild(eventElement);
+        //             });
+        //         } else {
+        //             calendarDiv.innerHTML += '<p>No upcoming events found.</p>';
+        //         }
+        //     } catch (error) {
+        //         console.error("Error fetching calendar events:", error);
+        //         document.getElementById("calendar-events").innerHTML = "<p>Failed to load events. Check the console for details.</p>";
+        //     }
+        // }
+
+
+
+
+        async function loadCalendarEvents() {
+    try {
+        // const response = await gapi.client.calendar.events.list({
+        //     'calendarId': 'primary',
+        //     'timeMin': (new Date()).toISOString(),
+        //     'showDeleted': false,
+        //     'singleEvents': true,
+        //     'orderBy': 'startTime'
+
+
+
+        const pastDate = new Date();
+pastDate.setDate(pastDate.getDate() - 30); // 30 days ago
+
+const response = await gapi.client.calendar.events.list({
+    'calendarId': 'primary',
+    'timeMin': pastDate.toISOString(), // Updated to include past events
+    'showDeleted': false,
+    'singleEvents': true,
+    'orderBy': 'startTime'
+});
+        // });
+        const events = response.result.items.map(event => ({
+            title: event.summary,
+            start: event.start.dateTime || event.start.date,
+            end: event.end.dateTime || event.end.date
+        }));
+
+        // Initialize FullCalendar
+        const calendarDiv = document.getElementById("calendar-events");
+        calendarDiv.innerHTML = ''; // Clear any previous content
+        const calendar = new FullCalendar.Calendar(calendarDiv, {
+            initialView: 'dayGridMonth',
+            events: events
+        });
+        calendar.render();
+    } catch (error) {
+        console.error("Error fetching calendar events:", error);
+    }
+}
+
+
+
+
+
+        // Load the Google API client library and GIS client
+        window.onload = () => {
+            gapiLoaded();
+            gisLoaded();
+        };
+    </script>
+</body>
+</html>
