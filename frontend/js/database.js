@@ -4,7 +4,7 @@ import { getFirestore, doc, getDoc, collection, getDocs, setDoc, addDoc, deleteD
 import { getAuth, signInWithEmailAndPassword, GoogleAuthProvider, signInWithPopup, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/11.0.1/firebase-auth.js";
 
 const firebaseConfig = {
-
+  apiKey: "AIzaSyBkep4kR1KlxAHUQM8-dJo-b0cOjUA1tCc",
   authDomain: "edufly-61bfe.firebaseapp.com",
   projectId: "edufly-61bfe",
   storageBucket: "edufly-61bfe.firebasestorage.app",
