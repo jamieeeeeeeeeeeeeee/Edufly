@@ -6,6 +6,8 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>EduFly</title>
     <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
+    <!-- Firebase Link -->
+    <script type="module" src="login.js" defer></script>
 
 
     <style>
@@ -20,7 +22,8 @@
 
         /* Adjust body padding to prevent overlap with fixed navbar */
         body {
-            padding-top: 70px; /* Adjust according to navbar height */
+            padding-top: 70px;
+            /* Adjust according to navbar height */
             background-color: #f4f6f9;
             display: flex;
             justify-content: center;
@@ -28,7 +31,10 @@
             height: 100vh;
             margin: 0;
             font-family: Arial, sans-serif;
+            background-image: url(classroom.avif);
+            background-size: cover;
         }
+
 
         /* Background and form styling */
         .background {
@@ -72,7 +78,8 @@
         }
 
         /* Button styling */
-        #submit, .google-button {
+        #submit,
+        .google-button {
             width: 100%;
             padding: 12px;
             margin-top: 15px;
@@ -138,6 +145,7 @@
         </div>
     </nav>
 
+    <!-- Main Container -->
     <div class="background">
         <form>
             <h3>Log in</h3>
@@ -159,24 +167,11 @@
 
         <p>Don't Have an Account? Click <a href='../Create Account/register_teacher.html'>Here</a> to create one.</p>
     </div>
+    
     <script type="module">
         // Firebase configuration and login script
-        import { initializeApp } from "https://www.gstatic.com/firebasejs/11.0.1/firebase-app.js";
-        import { getAnalytics } from "https://www.gstatic.com/firebasejs/11.0.1/firebase-analytics.js";
-        import { getAuth, signInWithEmailAndPassword, GoogleAuthProvider, signInWithPopup } from "https://www.gstatic.com/firebasejs/11.0.1/firebase-auth.js";
-
-        const firebaseConfig = {
-            apiKey: "AIzaSyBkep4kR1KlxAHUQM8-dJo-b0cOjUA1tCc",
-            authDomain: "edufly-61bfe.firebaseapp.com",
-            projectId: "edufly-61bfe",
-            storageBucket: "edufly-61bfe.firebasestorage.app",
-            messagingSenderId: "467191151194",
-            appId: "1:467191151194:web:cac30fd47ebff5a7233663",
-            measurementId: "G-NQN411353D"
-        };
-
-        const app = initializeApp(firebaseConfig);
-        const analytics = getAnalytics(app);
+        import { db } from "../js/database.js";
+        import { getAuth, signInWithEmailAndPassword, GoogleAuthProvider, signInWithPopup } from "../js/database.js";
 
         const submit = document.getElementById('submit')
         submit.addEventListener("click", function (event) {
@@ -197,7 +192,6 @@
                 });
         })
 
-        const auth = getAuth(app);
         const provider = new GoogleAuthProvider();
 
         const googleLogin = document.getElementById("google-login-btn")
@@ -216,4 +210,3 @@
 </body>
 
 </html>
-

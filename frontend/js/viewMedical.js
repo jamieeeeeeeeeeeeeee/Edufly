@@ -1,23 +1,4 @@
-import { initializeApp, getApps } from "https://www.gstatic.com/firebasejs/11.0.1/firebase-app.js";
-import { getFirestore, doc, getDoc } from "https://www.gstatic.com/firebasejs/11.0.1/firebase-firestore.js";
-import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/11.0.1/firebase-auth.js";
-
-// Firebase configuration
-const firebaseConfig = {
-    apiKey: "",
-    authDomain: "edufly-61bfe.firebaseapp.com",
-    projectId: "edufly-61bfe",
-    storageBucket: "edufly-61bfe.appspot.com",
-    messagingSenderId: "467191151194",
-    appId: "1:467191151194:web:cac30fd47ebff5a7233663",
-    measurementId: "G-NQN411353D"
-};
-
-// Initialize Firebase
-const app = !getApps().length ? initializeApp(firebaseConfig) : getApps()[0];
-const db = getFirestore(app);
-const auth = getAuth(app);
-
+import {auth, db, onAuthStateChanged, getFirestore, doc, getDoc, collection, getDocs, setDoc, addDoc, deleteDoc } from '../js/database.js';
 // Create Vue application
 const vueApp = Vue.createApp({
     data() {

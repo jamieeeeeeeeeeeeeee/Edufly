@@ -10,7 +10,8 @@
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3/dist/js/bootstrap.bundle.min.js"></script>
     <!-- Vue 3 -->
     <script src="https://unpkg.com/vue@3/dist/vue.global.js"></script>
-    <!-- <script type="module" src="../update.js"></script> -->
+    <!-- Firebase Link -->
+    <script type="module" src="../js/update.js"></script>
 
     <title>EduFly Portal</title>
     <style>
@@ -43,10 +44,11 @@
                 </li>
             </ul>
             <ul class="navbar-nav ms-auto">
-                <li class="nav-item"><a class="nav-link" href="#">&#128682; Log Out</a></li>
+                <button id="logout-btn" class="btn btn-primary">&#128682; Log Out</button>
             </ul>
         </div>
     </nav>
+
     <!-- Main container -->
     <div id="app" class="container mt-4">
         <label for="classSelect" class="form-label">Select Class:</label>
@@ -64,6 +66,10 @@
             class="btn btn-primary mb-3">
             {{ showAddAssignmentForm ? 'Cancel' : 'Add Assignment' }}
         </button>
+        <!-- <a v-if="assignments.length > 0 && selectedClass" href="../view_homework.html" target="_blank" class="btn btn-info mb-3">View Submitted Assignments</a> -->
+        <button><a v-id="assignments.length > 0 && selectedClass" :href="`./view_homework.html?class=${selectedClass}`" target="_blank" class="btn btn-info mb-3">
+            View Submitted Assignments
+        </a></button>
 
         <div v-if="showAddAssignmentForm" class="mb-4">
             <h3>Add New Assignment</h3>
@@ -138,35 +144,10 @@
 
 
         <p v-if="assignments.length === 0 && selectedClass">No assignments available for {{ selectedClass }}</p>
-
-        <!-- Button to view submitted assignments with selected class in URL -->
-        <a :href="`../view_homework.html?class=${selectedClass}`" target="_blank" class="btn btn-info mb-3">
-            View Submitted Assignments
-        </a>
-
     </div>
 
     <script type="module">
-        import { initializeApp, getApps } from "https://www.gstatic.com/firebasejs/11.0.1/firebase-app.js";
-        import { getFirestore, doc, getDoc, collection, getDocs, setDoc, Timestamp, deleteDoc } from "https://www.gstatic.com/firebasejs/11.0.1/firebase-firestore.js";
-        import { getAnalytics } from "https://www.gstatic.com/firebasejs/11.0.1/firebase-analytics.js";
-        import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/11.0.1/firebase-auth.js";
-
-
-        const firebaseConfig = {
-            apiKey: "AIzaSyBkep4kR1KlxAHUQM8-dJo-b0cOjUA1tCc",
-            authDomain: "edufly-61bfe.firebaseapp.com",
-            projectId: "edufly-61bfe",
-            storageBucket: "edufly-61bfe.appspot.com",
-            messagingSenderId: "467191151194",
-            appId: "1:467191151194:web:cac30fd47ebff5a7233663",
-            measurementId: "G-NQN411353D"
-        };
-        // Check if Firebase has already been initialized
-        const app = !getApps().length ? initializeApp(firebaseConfig) : getApps()[0];
-        const analytics = getAnalytics(app);
-        const db = getFirestore(app);
-        const auth = getAuth(app);
+       import {auth, db, onAuthStateChanged, getFirestore, doc, getDoc, collection, getDocs, setDoc, addDoc, deleteDoc } from '../js/database.js';
 
         // Vue component
         const vueApp = Vue.createApp({
