@@ -43,7 +43,7 @@ const vueApp = Vue.createApp({
             this.loading = true;
 
             try {
-                const response = await fetch('https://test-mongo-hoz8a2iyq-jamies-projects-ac80ffa6.vercel.app//api/homeworks', {
+                const response = await fetch('https://test-mongo-hoz8a2iyq-jamies-projects-ac80ffa6.vercel.app/api/homeworks', {
                     mode: "cors"
                 });
                 const homeworks = await response.json();
