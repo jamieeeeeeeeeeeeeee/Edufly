@@ -1,0 +1,378 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Teacher Consultation Requests</title>
+
+    <!-- Bootstrap for styling -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet"
+        integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH" crossorigin="anonymous">
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="https://unpkg.com/vue@3/dist/vue.global.js"></script>
+
+    <script type="module" src="../../js/update.js"></script>
+
+    <!-- FullCalendar for displaying the calendar -->
+    <link href="https://cdn.jsdelivr.net/npm/fullcalendar@6.1.8/index.global.min.css" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/fullcalendar@6.1.8/index.global.min.js"></script>
+
+    <link rel="stylesheet" href="../teacher_navbar.css">
+
+    <style>
+        #calendar {
+            max-width: 600px;
+            margin: 0 auto;
+        }
+    </style>
+</head>
+
+<body class="full-height bg-light">
+
+    <!-- Navbar -->
+    <nav class="navbar navbar-expand-lg navbar-dark">
+        <a class="navbar-brand" href="../Homepage/home_teacher.html">
+            <img src="../../img/icon.png" alt="Logo" class="d-inline-block align-top"
+                style="height: 30px; width: auto; margin-left: 15px;">
+            EduFly
+        </a>
+        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav"
+            aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+            <span class="navbar-toggler-icon"></span>
+        </button>
+        <div class="collapse navbar-collapse" id="navbarNav">
+            <ul class="navbar-nav ml-auto">
+                <li class="nav-item"><a class="nav-link" href="../Homework_Tracker/Assignment_List.html">&#9997;&#65039;
+                        Homework</a></li>
+                <li class="nav-item"><a class="nav-link" href="../Timetable/timetable.html">&#128467;&#65039;
+                        Timetable</a></li>
+                <li class="nav-item"><a class="nav-link" href="../Academic_Dashboard/Student_List.html">&#127891;
+                        Progress Monitor</a></li>
+                <li class="nav-item"><a class="nav-link" href="../Announcement/Announcement_Page.html">&#128226;
+                        Announcement</a></li>
+                <li class="nav-item"><a class="nav-link" href="../Consultations/teacher_consultation.html">&#128172;
+                        Consultations</a></li>
+                <li class="nav-item">
+                    <a class="nav-link" id="profileLink" href="../Homepage/profile.html">&#128100; Profile</a>
+                    <!-- Target for dynamic name -->
+                </li>
+            </ul>
+            <ul class="navbar-nav ms-auto">
+                <button id="logout-btn" class="btn btn-primary">&#128682; Log Out</button>
+                <!-- Snackbar Notification -->
+                <div id="snackbar" class="snackbar"></div>
+            </ul>
+        </div>
+    </nav>
+
+    <!-- Consultation Requests -->
+    <div id="app" class="container mt-5 mb-5">
+        <h2>Consultation Requests</h2>
+
+        <!-- Dropdown for selecting class -->
+        <div v-if="classes.length > 0">
+            <label for="class-select">Select a Class:</label>
+            <select id="class-select" class="form-select" v-model="selectedClass" @change="fetchConsultations">
+                <option v-for="className in classes" :key="className" :value="className">
+                    {{ className }}
+                </option>
+            </select>
+        </div>
+
+        <!-- Loading Spinner -->
+        <div v-if="loading" class="text-center my-4">
+            <div class="spinner-border text-primary" role="status">
+                <span class="visually-hidden">Loading...</span>
+            </div>
+            <p>Loading data, please wait...</p>
+        </div>
+
+        <h3 v-if="!loading && selectedClass" class="mt-3">Calendar View</h3>
+        <p v-else-if="!loading && !selectedClass" class="mt-3">No class selected.</p>
+        <div id="calendar" class="my-4"></div>
+
+        <!-- Event Information Modal -->
+        <div class="modal fade" id="eventModal" tabindex="-1" aria-labelledby="eventModalLabel" aria-hidden="true">
+            <div class="modal-dialog">
+                <div class="modal-content" v-if="selectedEvent.studentName">
+                    <div class="modal-header">
+                        <h5 class="modal-title" id="eventModalLabel">Consultation Details</h5>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                    </div>
+                    <div class="modal-body">
+                        <p><strong>Student Name:</strong> {{ selectedEvent.studentName }}</p>
+                        <p><strong>Student ID:</strong> {{ selectedEvent.studentID }}</p>
+                        <p><strong>Subject:</strong> {{ selectedEvent.subject }}</p>
+                        <p><strong>Description:</strong> {{ selectedEvent.reason }}</p>
+                        <p><strong>Preferred Time:</strong> {{ selectedEvent.formattedPreferredTime }}</p>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Display Consultation Requests -->
+        <hr v-if="!loading && selectedClass && consultations.length > 0">
+        <h3 v-if="!loading && consultations.length > 0">Pending Consultation Requests</h3>
+        <table v-if="!loading && consultations.length > 0" class="table table-striped">
+            <thead>
+                <tr>
+                    <th>Student Name</th>
+                    <th>Student ID</th>
+                    <th>Subject</th>
+                    <th>Description</th>
+                    <th>Preferred Time</th>
+                    <th style="text-align: center;">Actions</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr v-for="consultation in consultations" :key="consultation.id">
+                    <td>{{ consultation.studentName }}</td>
+                    <td>{{ consultation.studentID }}</td>
+                    <td>{{ consultation.subject }}</td>
+                    <td>{{ consultation.reason }}</td>
+                    <td>{{ consultation.preferredTime }}</td>
+                    <td style="text-align: center">
+                        <button class="btn btn-success me-2"
+                            @click="approveConsultation(consultation.id)">Approve</button>
+                        <button class="btn btn-danger" @click="rejectConsultation(consultation.id)">Reject</button>
+                    </td>
+                </tr>
+            </tbody>
+        </table>
+
+        <!-- Snackbar for Notifications -->
+        <div class="toast-container position-fixed bottom-0 end-0 p-3">
+            <div id="noConsultationsToast" class="toast align-items-center text-bg-dark" role="alert"
+                aria-live="assertive" aria-atomic="true">
+                <div class="d-flex">
+                    <div class="toast-body">
+                        No pending consultations.
+                    </div>
+                    <button type="button" class="btn-close me-2 m-auto bg-white" data-bs-dismiss="toast"
+                        aria-label="Close"></button>
+                </div>
+            </div>
+        </div>
+    </div>
+    <!-- Footer -->
+    <footer class="container-fluid text-white pt-4 mt-auto text-center" style="background-color: #343a40">
+        <div class="row">
+            <p>&copy; 2024 EduFly. All Rights Reserved.</p>
+        </div>
+    </footer>
+
+    <script type="module">
+        import { auth, db, onAuthStateChanged, doc, getDoc, collection, query, getDocs, updateDoc, setDoc, deleteDoc } from '../../js/database.js';
+
+        const vueApp = Vue.createApp({
+            data() {
+                return {
+                    teacher: {
+                        email: '',
+                        class: ''
+                    },
+                    classes: [],
+                    selectedClass: '',
+                    consultations: [],
+                    approvedConsultations: [],
+                    selectedEvent: {
+                        studentName: '',
+                        studentID: '',
+                        subject: '',
+                        reason: '',
+                        formattedPreferredTime: ''
+                    }, // Initialize with default properties
+                    loading: false
+                };
+            },
+            async created() {
+                await this.fetchTeacherData(); // Fetch teacher's data (email and classes)
+            },
+            methods: {
+                // Fetch teacher's classes
+                async fetchTeacherData() {
+                    onAuthStateChanged(auth, async (user) => {
+                        if (user) {
+                            const docRef = doc(db, 'Teachers', user.email);
+                            const docSnap = await getDoc(docRef);
+                            if (docSnap.exists()) {
+                                this.classes = docSnap.data().Classes; // Fetch list of classes
+                                console.log(this.classes); // Debug log to check classes
+                            } else {
+                                console.error('No teacher document found!');
+                            }
+                        }
+                    });
+                },
+                async fetchConsultations() {
+                    if (this.selectedClass) {
+                        this.loading = true
+                        try {
+                            const classRef = collection(db, 'Classes', this.selectedClass, 'RequestedConsultations');
+                            const q = query(classRef);
+                            const querySnapshot = await getDocs(q);
+
+                            this.consultations = querySnapshot.docs.map(doc => ({
+                                id: doc.id,
+                                ...doc.data()
+                            }));
+
+                            await this.fetchApprovedConsultations();
+
+                            if (this.consultations.length === 0) {
+                                this.showNoConsultationsToast()
+                            }
+                        } catch (error) {
+                            console.error('Error fetching consultations:', error);
+                        } finally {
+                            this.loading = false; // Hide loading spinner
+                        }
+                    }
+                },
+                // Function to show the snackbar notification
+                showNoConsultationsToast() {
+                    const toastEl = document.getElementById('noConsultationsToast');
+                    const toast = new bootstrap.Toast(toastEl);
+                    toast.show();
+                },
+
+                async fetchApprovedConsultations() {
+                    if (this.selectedClass) {
+                        this.loading = true;
+                        try {
+                            const approvedConsultationsRef = collection(db, 'Classes', this.selectedClass, 'ApprovedConsultations');
+                            const querySnapshot = await getDocs(approvedConsultationsRef);
+
+                            this.approvedConsultations = querySnapshot.docs.map(doc => {
+                                const consultation = doc.data();
+                                let formattedTime = consultation.preferredTime?.toDate ? consultation.preferredTime.toDate() : new Date(consultation.preferredTime);
+
+                                return {
+                                    id: doc.id,
+                                    studentName: consultation.studentName,
+                                    studentID: consultation.studentID,
+                                    subject: consultation.subject,
+                                    reason: consultation.reason,
+                                    formattedPreferredTime: formattedTime
+                                };
+
+                            });
+
+                            this.renderCalendar();
+                        } catch (error) {
+                            console.error('Error fetching approved consultations:', error);
+                        } finally {
+                            this.loading = false; // Hide loading spinner
+                        }
+                    }
+                },
+
+                // Render FullCalendar with event click functionality
+                renderCalendar() {
+                    const calendarEl = document.getElementById('calendar');
+                    const calendar = new FullCalendar.Calendar(calendarEl, {
+                        initialView: 'dayGridMonth',
+                        headerToolbar: {
+                            left: 'prev,next today',
+                            center: 'title',
+                            right: 'dayGridMonth,timeGridWeek,timeGridDay'
+                        },
+                        events: this.approvedConsultations.map(consultation => ({
+                            title: consultation.studentName,
+                            start: consultation.formattedPreferredTime,
+                            allDay: true,
+                            extendedProps: {
+                                studentID: consultation.studentID,
+                                subject: consultation.subject,
+                                reason: consultation.reason,
+                                formattedPreferredTime: consultation.formattedPreferredTime
+                            }
+                        })),
+                        eventClick: (info) => {
+                            // Ensure that all fields are defined before showing the modal
+                            this.selectedEvent = {
+                                studentName: info.event.title || 'N/A',
+                                studentID: info.event.extendedProps.studentID || 'N/A',
+                                subject: info.event.extendedProps.subject || 'N/A',
+                                reason: info.event.extendedProps.reason || 'N/A',
+                                formattedPreferredTime: info.event.extendedProps.formattedPreferredTime || 'N/A'
+                            };
+
+                            // Show the modal using Bootstrap's modal method
+                            const modal = new bootstrap.Modal(document.getElementById('eventModal'));
+                            modal.show();
+                        }
+                    });
+
+                    calendar.render();
+                },
+
+
+                // Approve a consultation and move it to the ApprovedConsultations collection
+                async approveConsultation(consultationId) {
+                    try {
+                        // Reference to the consultation in RequestedConsultations
+                        const consultationRef = doc(db, 'Classes', this.selectedClass, 'RequestedConsultations', consultationId);
+
+                        // Fetch the consultation document
+                        const consultationSnap = await getDoc(consultationRef);
+
+                        if (consultationSnap.exists()) {
+                            // Get the consultation data
+                            const consultationData = consultationSnap.data();
+
+                            // Add the status as 'Approved'
+                            consultationData.status = 'Approved';
+
+                            // Reference to the ApprovedConsultations collection
+                            const approvedConsultationsRef = doc(db, 'Classes', this.selectedClass, 'ApprovedConsultations', consultationId);
+
+                            // Move the consultation to the ApprovedConsultations collection
+                            await setDoc(approvedConsultationsRef, consultationData);
+
+                            // Now, delete the consultation from the RequestedConsultations
+                            await deleteDoc(consultationRef);
+
+                            alert('Consultation request approved and moved to ApprovedConsultations!');
+                            this.fetchConsultations(); // Refresh the consultation list
+                        } else {
+                            console.error('Consultation document does not exist');
+                            alert('Consultation not found.');
+                        }
+                    } catch (error) {
+                        console.error('Error approving consultation:', error);
+                        alert('Failed to approve request.');
+                    }
+                },
+
+
+                async rejectConsultation(consultationId) {
+                    try {
+                        // Reference to the specific consultation document
+                        const consultationRef = doc(db, 'Classes', this.selectedClass, 'RequestedConsultations', consultationId);
+
+                        // Delete the consultation document
+                        await deleteDoc(consultationRef);
+
+                        alert('Consultation rejected successfully!');
+
+                        // Refresh the list of consultations after deletion
+                        this.fetchConsultations();
+                    } catch (error) {
+                        console.error('Error rejecting consultation:', error);
+                        alert('Failed to reject consultation.');
+                    }
+                }
+            }
+        });
+
+        vueApp.mount('#app');
+    </script>
+
+</body>
+
+</html>

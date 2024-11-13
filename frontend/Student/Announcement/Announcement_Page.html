@@ -1,0 +1,243 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet"
+        integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH" crossorigin="anonymous">
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="https://unpkg.com/vue@3/dist/vue.global.js"></script>
+
+    <!-- Firebase Link -->
+    <script type="module" src="../../js/update.js"></script>
+    <title>Announcement List</title>
+
+    <link rel="stylesheet" href="../student_navbar.css">
+    <style>
+        .timeline {
+            list-style-type: none;
+            padding: 0;
+        }
+
+        .timeline-item {
+            display: flex;
+            margin-bottom: 1rem;
+            padding: 1rem;
+            position: relative;
+        }
+
+        /* Timeline Indicator Circle */
+        .timeline-item::before {
+            content: '';
+            position: absolute;
+            left: -10px;
+            top: 50%;
+            width: 14px;
+            height: 14px;
+            background-color: green;
+            border-radius: 50%;
+            transform: translateY(-50%);
+            /* Ensures vertical centering */
+        }
+
+        .timeline-item .content {
+            flex-grow: 1;
+            padding-left: 30px;
+            /* Adjusted padding to give space for the circle */
+        }
+
+        .timeline-item h5 {
+            margin-bottom: 0.5rem;
+        }
+
+        .timeline-item p {
+            margin-bottom: 0.5rem;
+        }
+
+        .timeline-item .date {
+            font-size: 0.9rem;
+            color: #6c757d;
+        }
+    </style>
+
+</head>
+
+<body class="full-height bg-light">
+
+    <!-- Navbar -->
+    <nav class="navbar navbar-expand-lg navbar-dark">
+        <a class="navbar-brand" href="../Homepage/home_student.html">
+            <img src="../../img/icon.png" alt="Logo" class="d-inline-block align-top"
+                style="height: 30px; width: auto; margin-left: 15px;">
+            EduFly
+        </a>
+        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav"
+            aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+            <span class="navbar-toggler-icon"></span>
+        </button>
+        <div class="collapse navbar-collapse" id="navbarNav">
+            <ul class="navbar-nav ml-auto">
+                <li class="nav-item"><a class="nav-link" href="../Homework_Tracker/Assignment_List.html">&#9997;&#65039;
+                        Homework</a></li>
+                <li class="nav-item"><a class="nav-link" href="../Timetable/timetable.html">&#128467;&#65039;
+                        Timetable</a></li>
+                <li class="nav-item"><a class="nav-link" href="../Summary/SummaryPage.html">&#127891; Progress
+                        Tracker</a></li>
+                <li class="nav-item"><a class="nav-link" href="../Announcement/Announcement_Page.html">&#128226;
+                        Announcement</a></li>
+                <li class="nav-item"><a class="nav-link" href="../Medical/upload_medical.html">&#128221; Form
+                        Submission</a></li>
+                <li class="nav-item"><a class="nav-link" href="../Pomodoro_Timer/pomodoro.html">&#128338; Pomodoro
+                        Timer</a></li>
+                <li class="nav-item"><a class="nav-link" href="../Consultation/student_consultation.html">&#128172; Book
+                        Consults</a></li>
+                <li class="nav-item">
+                    <a class="nav-link" id="profileLink" href="../Homepage/profile.html">&#128100; Profile</a>
+                </li>
+            </ul>
+            <ul class="navbar-nav ms-auto">
+                <button id="logout-btn" class="btn btn-primary">&#128682; Log Out</button>
+                <!-- Snackbar Notification -->
+                <div id="snackbar" class="snackbar">Logged out successfully!</div>
+            </ul>
+        </div>
+    </nav>
+
+    <!-- Announcement Timeline -->
+    <div id="app" class="container mt-5">
+        <h2>Announcements</h2>
+
+        <!-- Loading Spinner -->
+        <div v-if="loading" class="text-center">
+            <div class="spinner-border text-primary" role="status">
+                <span class="visually-hidden">Loading...</span>
+            </div>
+        </div>
+
+        <ul v-if="!loading && announcements.length > 0" class="timeline">
+            <li v-for="announcement in announcements" :key="announcement.id" class="timeline-item">
+                <div class="content">
+                    <h5>{{ announcement.title }}</h5>
+                    <p>{{ announcement.message }}</p>
+                    <div class="date">
+                        <strong>Posted:</strong> {{ announcement.postedDate }} <br>
+                        <strong>Deadline:</strong> {{ announcement.deadlineDate }}
+                    </div>
+                </div>
+            </li>
+        </ul>
+
+        <p v-if="!loading && announcements.length === 0">No announcements available for your class.</p>
+    </div>
+
+    <!-- Footer -->
+    <footer class="container-fluid text-white pt-4 mt-auto text-center" style="background-color: #343a40">
+        <div class="row">
+            <p>&copy; 2024 EduFly. All Rights Reserved.</p>
+        </div>
+    </footer>
+
+    <script type="module">
+        import { auth, db, onAuthStateChanged, doc, getDoc, collection, getDocs, Timestamp } from '../../js/database.js';
+
+        const vueApp = Vue.createApp({
+            data() {
+                return {
+                    studentClass: null,
+                    announcements: [],
+                    loading: false
+                };
+            },
+            async created() {
+                this.loading = true
+                try {
+                    await this.fetchUserClass();
+                    if (this.studentClass) {
+                        await this.fetchAnnouncements();
+                    }
+                } catch (error) {
+                    console.error("Error during data fetching:", error);
+                } finally {
+                    this.loading = false; // Stop loading spinner once all data is fetched
+                }
+            },
+            methods: {
+                async fetchUserClass() {
+                    return new Promise((resolve, reject) => {
+                        onAuthStateChanged(auth, async (user) => {
+                            if (user) {
+                                const userEmail = user.email;
+                                const docRef = doc(db, 'Students', userEmail);
+                                const docSnap = await getDoc(docRef);
+
+                                if (docSnap.exists()) {
+                                    this.studentClass = docSnap.data().Class;
+                                    console.log("Student's class:", this.studentClass);
+                                    resolve();
+                                } else {
+                                    console.error("No such student document!");
+                                    reject("No student document found");
+                                }
+                            } else {
+                                // console.error("User not logged in.");
+                                // window.location.href = "../Login_Page/login.html";
+                                // reject("User not logged in");
+                            }
+                        });
+                    });
+                },
+                async fetchAnnouncements() {
+                    if (!this.studentClass) return;
+
+                    this.announcements = [];
+                    try {
+                        const announcementsRef = collection(db, 'Classes', this.studentClass, 'AnnouncementList');
+                        const querySnapshot = await getDocs(announcementsRef);
+
+                        querySnapshot.forEach((doc) => {
+                            const data = doc.data();
+
+                            // Ensure datePosted and deadline are valid Firestore Timestamps
+                            if (data.datePosted && data.datePosted instanceof Timestamp) {
+                                const { date: postedDate, time: postedTime } = this.formatFirestoreTimestamp(data.datePosted);
+                                const { date: deadlineDate, time: deadlineTime } = this.formatFirestoreTimestamp(data.deadline);
+
+                                this.announcements.push({
+                                    id: doc.id,
+                                    title: data.title,
+                                    message: data.message,
+                                    postedDate: postedDate + ' ' + postedTime,
+                                    deadlineDate: deadlineDate + ' ' + deadlineTime
+                                });
+                            } else {
+                                console.error(`Invalid or missing timestamp for announcement with ID ${doc.id}`);
+                            }
+                        });
+
+                        console.log("Announcements fetched:", this.announcements);
+                    } catch (error) {
+                        console.error("Error fetching announcements:", error);
+                    }
+                },
+                formatFirestoreTimestamp(timestamp) {
+                    if (!timestamp || !(timestamp instanceof Timestamp)) {
+                        console.error('Invalid or missing timestamp:', timestamp);
+                        return { date: 'N/A', time: 'N/A' };
+                    }
+
+                    const date = timestamp.toDate();
+                    const formattedDate = `${date.toLocaleString('en-US', { month: 'long' })} ${date.getDate()}, ${date.getFullYear()}`;
+                    const formattedTime = `${String(date.getHours()).padStart(2, '0')}:${String(date.getMinutes()).padStart(2, '0')}:${String(date.getSeconds()).padStart(2, '0')}`;
+
+                    return { date: formattedDate, time: formattedTime };
+                }
+            }
+        });
+
+        vueApp.mount('#app');
+    </script>
+
+</body>
+
+</html>

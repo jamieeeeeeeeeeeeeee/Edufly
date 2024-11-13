@@ -1,0 +1,359 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <!-- Bootstrap CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet"
+        integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH" crossorigin="anonymous">
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3/dist/js/bootstrap.bundle.min.js"></script>
+    <!-- Vue 3 -->
+    <script src="https://unpkg.com/vue@3/dist/vue.global.js"></script>
+    <!-- Firebase Link -->
+    <script type="module" src="../../js/update.js"></script>
+
+    <!-- jsPDF -->
+    <script src="https://cdn.jsdelivr.net/npm/jspdf@2.5.1/dist/jspdf.umd.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.5.25/jspdf.plugin.autotable.min.js"></script>
+
+    <link rel="stylesheet" href="../teacher_navbar.css">
+
+    <title>EduFly Portal</title>
+    <style>
+        /* Highlight row with high absence count */
+        .absent-warning {
+            background-color: #ffdddd !important;
+            /* Light red background */
+        }
+    </style>
+</head>
+
+<body class="full-height bg-light">
+
+    <!-- Navbar -->
+    <nav class="navbar navbar-expand-lg navbar-dark">
+        <a class="navbar-brand" href="../Homepage/home_teacher.html">
+            <img src="../../img/icon.png" alt="Logo" class="d-inline-block align-top"
+                style="height: 30px; width: auto; margin-left: 15px;">
+            EduFly
+        </a>
+        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav"
+            aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+            <span class="navbar-toggler-icon"></span>
+        </button>
+        <div class="collapse navbar-collapse" id="navbarNav">
+            <ul class="navbar-nav ml-auto">
+                <li class="nav-item"><a class="nav-link" href="../Homework_Tracker/Assignment_List.html">&#9997;&#65039;
+                        Homework</a></li>
+                <li class="nav-item"><a class="nav-link" href="../Timetable/timetable.html">&#128467;&#65039;
+                        Timetable</a></li>
+                <li class="nav-item"><a class="nav-link" href="../Academic_Dashboard/Student_List.html">&#127891;
+                        Progress Monitor</a></li>
+                <li class="nav-item"><a class="nav-link" href="../Announcement/Announcement_Page.html">&#128226;
+                        Announcement</a></li>
+                <li class="nav-item"><a class="nav-link" href="../Consultations/teacher_consultation.html">&#128172;
+                        Consultations</a></li>
+                <li class="nav-item">
+                    <a class="nav-link" id="profileLink" href="../Homepage/profile.html">&#128100; Profile</a>
+                    <!-- Target for dynamic name -->
+                </li>
+            </ul>
+            <ul class="navbar-nav ms-auto">
+                <button id="logout-btn" class="btn btn-primary">&#128682; Log Out</button>
+                <!-- Snackbar Notification -->
+                <div id="snackbar" class="snackbar"></div>
+            </ul>
+        </div>
+    </nav>
+
+    <!-- Main Container -->
+    <div id="app" class="container mt-4">
+
+        <label for="classSelect" class="form-label">Select Class:</label>
+        <select v-model="selectedClass" @change="fetchStudents" id="classSelect" class="form-select mb-4">
+            <option value="" disabled>Select a class</option>
+            <option v-for="className in classes" :key="className" :value="className">
+                {{ className }}
+            </option>
+        </select>
+
+        <!-- Loading Spinner -->
+        <div v-if="loading" class="text-center my-4">
+            <div class="spinner-border text-primary" role="status">
+                <span class="visually-hidden">Loading...</span>
+            </div>
+            <p>Loading data, please wait...</p>
+        </div>
+
+        <!-- Check Attendance and Check Assignment Grades Buttons -->
+        <div v-if="!loading && selectedClass" class="mb-3">
+            <button @click="goToAttendanceTracker" class="btn btn-primary">
+                Check Attendance
+            </button>
+            <button @click="goToGradesTracker" class="btn btn-secondary ms-2">
+                Check Assignment Grades
+            </button>
+            <button @click="generatePDF" class="btn btn-success ms-2">
+                Download Student List
+            </button>
+        </div>
+        <div v-else>No class selected.</div>
+
+        <h2 v-if="!loading && selectedClass">Students in {{ selectedClass }}</h2>
+        <table v-if="!loading && selectedClass" class="table table-striped">
+            <thead>
+                <tr>
+                    <th>Student ID</th>
+                    <th>First Name</th>
+                    <th>Last Name</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr v-for="student in students" :key="student.studentId" @click="viewStudentInfo(student)"
+                    :class="{'absent-warning': student.AbsentCount >= Number(0)}">
+                    <td><a href="#" @click.prevent="viewStudentInfo(student)">{{ student.studentId }}</a></td>
+                    <td>{{ student.Fname }}</td>
+                    <td>{{ student.Lname }}</td>
+                </tr>
+            </tbody>
+        </table>
+        <p v-if="!loading && students.length === 0 && selectedClass">No students available for {{ selectedClass }}</p>
+
+        <!-- Button to show add student form -->
+        <button class="btn btn-primary" @click="showAddStudentForm = true" v-if="!loading && selectedClass">Add
+            Student</button>
+
+        <!-- Add Student Form -->
+        <div v-if="!loading && showAddStudentForm" class="mt-4">
+            <h3>Add New Student</h3>
+            <form @submit.prevent="addStudent" class="mb-5">
+                <div class="mb-3">
+                    <label for="studentId" class="form-label">Student ID</label>
+                    <input type="text" v-model="newStudent.studentId" id="studentId" class="form-control" required>
+                </div>
+                <div class="mb-3">
+                    <label for="studentNRIC" class="form-label">Student NRIC</label>
+                    <input type="text" v-model="newStudent.NRIC" id="NRIC" class="form-control" required>
+                </div>
+                <div class="mb-3">
+                    <label for="firstName" class="form-label">First Name</label>
+                    <input type="text" v-model="newStudent.Fname" id="firstName" class="form-control" required>
+                </div>
+                <div class="mb-3">
+                    <label for="lastName" class="form-label">Last Name</label>
+                    <input type="text" v-model="newStudent.Lname" id="lastName" class="form-control" required>
+                </div>
+                <div class="mb-3">
+                    <label for="birthdate" class="form-label">Date of Birth (YYYY-MM-DD)</label>
+                    <input type="text" v-model="newStudent.BirthDate" id="birthDate" class="form-control" required>
+                </div>
+                <div class="mb-3">
+                    <label for="parent" class="form-label">Emergency Contact Name</label>
+                    <input type="text" v-model="newStudent.Parent" id="parent" class="form-control" required>
+                </div>
+                <div class="mb-3">
+                    <label for="relationship" class="form-label">Relationship with Emergency Contact </label>
+                    <input type="text" v-model="newStudent.Relationship" id="relationship" class="form-control"
+                        required>
+                </div>
+                <div class="mb-3">
+                    <label for="contact" class="form-label">Emergency Contact No. </label>
+                    <input type="text" v-model="newStudent.EmergencyContact" id="contact" class="form-control" required>
+                </div>
+                <button type="submit" class="btn btn-success">Add Student</button>
+                <button type="button" class="btn btn-secondary" @click="cancelAddStudent">Cancel</button>
+            </form>
+        </div>
+
+        <!-- Student Info Modal -->
+        <div v-if="!loading && selectedStudent" class="modal fade show" tabindex="-1"
+            aria-labelledby="studentInfoModalLabel" style="display: block; background: rgba(0,0,0,0.5);">
+            <div class="modal-dialog">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title" id="studentInfoModalLabel">Student Information</h5>
+                        <button type="button" class="btn-close" @click="closeStudentInfoModal"
+                            aria-label="Close"></button>
+                    </div>
+                    <div class="modal-body">
+                        <p><strong>Student ID:</strong> {{ selectedStudent.studentId }}</p>
+                        <p><strong>First Name:</strong> {{ selectedStudent.Fname }}</p>
+                        <p><strong>Last Name:</strong> {{ selectedStudent.Lname }}</p>
+                        <p><strong>NRIC: </strong>{{selectedStudent.NRIC}}</p>
+                        <p><strong>Date of Birth: </strong>{{selectedStudent.BirthDate}}</p>
+                        <p><strong>AbsentCount: </strong> {{selectedStudent.AbsentCount }}</p>
+                        <p><strong>Emergency Contact Name: </strong> {{selectedStudent.Parent }}</p>
+                        <p><strong>Relationship with Emergency Contact: </strong> {{selectedStudent.Relationship}}</p>
+                        <p><strong>Emergency Contact: </strong> {{selectedStudent.EmergencyContact}}</p>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" @click="closeStudentInfoModal">Close</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Footer -->
+    <footer class="container-fluid text-white pt-4 mt-auto text-center" style="background-color: #343a40">
+        <div class="row">
+            <p>&copy; 2024 EduFly. All Rights Reserved.</p>
+        </div>
+    </footer>
+
+    <script type="module">
+        import { auth, db, onAuthStateChanged, getFirestore, doc, getDoc, collection, getDocs, setDoc, addDoc, deleteDoc } from '../../js/database.js';
+
+        const vueApp = Vue.createApp({
+            data() {
+                return {
+                    classes: [],
+                    selectedClass: "",
+                    students: [],
+                    showAddStudentForm: false,
+                    newStudent: {
+                        studentId: "",
+                        Fname: "",
+                        Lname: "",
+                        BirthDate: "",
+                        AbsentCount: 0,
+                        Parent: "",
+                        Relationship: "",
+                        EmergencyContact: ""
+                    },
+                    selectedStudent: null, // set to null initially
+                    loading: false,
+                };
+            },
+            async created() {
+                onAuthStateChanged(auth, async (user) => {
+                    if (user) {
+                        const userEmail = user.email; // Get the logged-in user's email
+                        const docRef = doc(db, 'Teachers', userEmail); // Use email as document ID
+                        const docSnap = await getDoc(docRef);
+
+                        if (docSnap.exists()) {
+                            this.classes = docSnap.data().Classes;
+                        } else {
+                            console.log("No such document!");
+                        }
+                    } else {
+                        console.log("User not logged in.");
+                    }
+                });
+            },
+            methods: {
+                async fetchStudents() {
+                    this.students = [];
+                    this.loading = true;
+                    try {
+                        if (this.selectedClass) {
+                            const querySnapshot = await getDocs(collection(db, 'Classes', this.selectedClass, 'StudentList'));
+
+                            querySnapshot.forEach((doc) => {
+                                this.students.push({
+                                    studentId: doc.data().StudentID,
+                                    NRIC: doc.data().NRIC,
+                                    Fname: doc.data().FName,
+                                    Lname: doc.data().LName,
+                                    AbsentCount: doc.data().AbsentCount,
+                                    BirthDate: doc.data().BirthDate,
+                                    Parent: doc.data().Parent,
+                                    Relationship: doc.data().Relationship,
+                                    EmergencyContact: doc.data().EmergencyContact,
+
+                                });
+                            });
+                        }
+                    } catch (error) {
+                        console.error("Error fetching students: " + error)
+                    } finally {
+                        this.loading = false
+                    }
+                },
+
+                async addStudent() {
+                    if (this.newStudent.studentId && this.newStudent.Fname && this.newStudent.Lname && this.newStudent.NRIC) {
+                        const studentRef = doc(db, 'Classes', this.selectedClass, 'StudentList', this.newStudent.studentId);
+                        await setDoc(studentRef, {
+                            StudentID: this.newStudent.studentId,
+                            FName: this.newStudent.Fname,
+                            LName: this.newStudent.Lname,
+                            NRIC: this.newStudent.NRIC,
+                            BirthDate: this.newStudent.BirthDate,
+                            Parent: this.newStudent.Parent,
+                            Relationship: this.newStudent.Relationship,
+                            EmegencyContact: this.newStudent.EmergencyContact,
+                            AbsentCount: 0
+                        });
+                        this.fetchStudents();
+                        this.cancelAddStudent();
+                    } 
+                },
+
+                cancelAddStudent() {
+                    this.showAddStudentForm = false;
+                    this.newStudent = { studentId: "", Fname: "", Lname: "" };
+                },
+                viewStudentInfo(student) {
+                    this.selectedStudent = student;
+                },
+                closeStudentInfoModal() {
+                    this.selectedStudent = null; // Reset selectedStudent to close the modal
+                },
+
+                goToAttendanceTracker() {
+                    // Redirect to AttendanceTracker.html with the selected class as a query parameter
+                    window.location.href = `Attendance_Tracker.html?class=${this.selectedClass}`;
+                },
+                goToGradesTracker() {
+                    // Redirect to GradesTracker.html with the selected class as a query parameter
+                    window.location.href = `Grades_Tracker.html?class=${this.selectedClass}`;
+                },
+                generatePDF() {
+                    const { jsPDF } = window.jspdf;
+                    const doc = new jsPDF();
+
+                    // Add title
+                    doc.setFontSize(18);
+                    doc.text('Student List', 14, 20);
+
+                    // Add class information
+                    doc.setFontSize(12);
+                    doc.text(`Class: ${this.selectedClass}`, 14, 30);
+
+                    // Prepare student data for the table
+                    const studentRows = this.students.map(student => [
+                        student.studentId,
+                        student.NRIC,
+                        student.Fname,
+                        student.Lname,
+                        student.BirthDate,
+                        student.Parent,
+                        student.EmergencyContact
+                    ]);
+
+                    // Add table with student data
+                    doc.autoTable({
+                        startY: 40,
+                        head: [['Student ID', 'NRIC', 'First Name', 'Last Name', 'Birth Date', 'Emergency Contact', 'Emergency Contact No.']],
+                        body: studentRows,
+                        theme: 'striped',
+                        headStyles: { fillColor: [0, 102, 204] },
+                        margin: { left: 14, right: 14 }
+                    });
+
+                    // Save the PDF
+                    doc.save(`${this.selectedClass}_Student_List.pdf`);
+                }
+            }
+        });
+
+        vueApp.mount('#app');
+    </script>
+
+
+</body>
+
+</html>

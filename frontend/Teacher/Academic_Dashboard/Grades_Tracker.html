@@ -1,0 +1,269 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <!-- Bootstrap CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet"
+        integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH" crossorigin="anonymous">
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3/dist/js/bootstrap.bundle.min.js"></script>
+    <!-- Vue 3 -->
+    <script src="https://unpkg.com/vue@3/dist/vue.global.js"></script>
+    <!-- Firebase Link -->
+    <script type="module" src="../../js/update.js"></script>
+
+    <link rel="stylesheet" href="../teacher_navbar.css">
+
+    <title>EduFly Portal</title>
+    <style>
+        .card {
+            margin-bottom: 15px;
+        }
+    </style>
+</head>
+
+<body class="full-height bg-light">
+
+    <!-- Navbar -->
+    <nav class="navbar navbar-expand-lg navbar-dark">
+        <a class="navbar-brand" href="../Homepage/home_teacher.html">
+            <img src="../../img/icon.png" alt="Logo" class="d-inline-block align-top"
+                style="height: 30px; width: auto; margin-left: 15px;">
+            EduFly
+        </a>
+        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav"
+            aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+            <span class="navbar-toggler-icon"></span>
+        </button>
+        <div class="collapse navbar-collapse" id="navbarNav">
+            <ul class="navbar-nav ml-auto">
+                <li class="nav-item"><a class="nav-link" href="../Homework_Tracker/Assignment_List.html">&#9997;&#65039;
+                        Homework</a></li>
+                <li class="nav-item"><a class="nav-link" href="../Timetable/timetable.html">&#128467;&#65039;
+                        Timetable</a></li>
+                <li class="nav-item"><a class="nav-link" href="../Academic_Dashboard/Student_List.html">&#127891;
+                        Progress Monitor</a></li>
+                <li class="nav-item"><a class="nav-link" href="../Announcement/Announcement_Page.html">&#128226;
+                        Announcement</a></li>
+                <li class="nav-item"><a class="nav-link" href="../Consultations/teacher_consultation.html">&#128172;
+                        Consultations</a></li>
+                <li class="nav-item">
+                    <a class="nav-link" id="profileLink" href="../Homepage/profile.html">&#128100; Profile</a>
+                    <!-- Target for dynamic name -->
+                </li>
+            </ul>
+            <ul class="navbar-nav ms-auto">
+                <button id="logout-btn" class="btn btn-primary">&#128682; Log Out</button>
+                <!-- Snackbar Notification -->
+                <div id="snackbar" class="snackbar"></div>
+            </ul>
+        </div>
+    </nav>
+    <div id="app" class="container mt-4">
+        <h2>Scores for {{ selectedClass }} - {{ selectedAssignmentTitle }} </h2>
+
+        <label for="assignmentSelect" class="form-label">Select Assignment:</label>
+        <select v-model="selectedAssignment" @change="fetchScores" id="assignmentSelect" class="form-select mb-4">
+            <option value="" disabled>Select an assignment</option>
+            <option v-for="assignment in assignments" :key="assignment.id" :value="assignment.id">
+                {{ assignment.title }}
+            </option>
+        </select>
+
+        <!-- Loading Spinner -->
+        <div v-if="loading" class="text-center my-4">
+            <div class="spinner-border text-primary" role="status">
+                <span class="visually-hidden">Loading...</span>
+            </div>
+            <p>Loading data, please wait...</p>
+        </div>
+
+        <!-- Cards for each student -->
+        <div class="row">
+            <div class="col-md-4" v-if="!loading" v-for="student in students" :key="student.studentId">
+                <div :class="['card', getScoreClass(student.score)]">
+                    <div class="card-body">
+                        <h5 class="card-title">{{ student.Fname }} {{ student.Lname }}</h5>
+                        <p class="card-text">Student ID: {{ student.studentId }}</p>
+                        <p class="card-text">
+                            Score (out of {{ maxGrade}}):
+                            <input type="number" v-model.number="student.score" min="0" :max="maxGrade"
+                                class="form-control mt-1" @input="validateScore(student)" />
+                        </p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <button v-if="!loading && students.length > 0 && selectedClass" class="btn btn-primary mt-3"
+            @click="saveAllScores">
+            Save Grades
+        </button>
+    </div>
+    <!-- Footer -->
+    <footer class="container-fluid text-white pt-4 mt-auto text-center" style="background-color: #343a40">
+        <div class="row">
+            <p>&copy; 2024 EduFly. All Rights Reserved.</p>
+        </div>
+    </footer>
+
+
+
+    <script type="module">
+        import { auth, db, getDocs, getDoc, doc, collection, setDoc } from '../../js/database.js';
+
+        const vueApp = Vue.createApp({
+            data() {
+                return {
+                    assignments: [],
+                    selectedClass: "",
+                    selectedAssignment: "",
+                    maxGrade: 0, // Default maxGrade
+                    students: [],
+                    loading: false
+                };
+            },
+            computed: {
+                selectedAssignmentTitle() {
+                    const assignment = this.assignments.find(a => a.id === this.selectedAssignment);
+                    return assignment ? assignment.title : "No Assignment Selected";
+                }
+            },
+            async created() {
+                const urlParams = new URLSearchParams(window.location.search);
+                const classFromURL = urlParams.get('class');
+                if (classFromURL) {
+                    this.selectedClass = classFromURL;
+                    await this.fetchAssignments();
+                }
+            },
+            methods: {
+                async fetchAssignments() {
+                    this.loading = true
+                    this.assignments = [];
+                    try {
+                        if (this.selectedClass) {
+                            const querySnapshot = await getDocs(collection(db, 'Classes', this.selectedClass, 'AssignmentList'));
+                            querySnapshot.forEach((doc) => {
+                                this.assignments.push({
+                                    id: doc.id,
+                                    title: doc.data().title,
+                                    maxGrade: doc.data().maxGrade || 100
+                                });
+                            });
+                        }
+                    } catch (error) {
+                        console.error("Error fetching assignments: " + error)
+                    } finally {
+                        this.loading = false
+                    }
+                },
+
+                async fetchScores() {
+                    const selectedAssignmentObj = this.assignments.find(a => a.id === this.selectedAssignment);
+                    this.maxGrade = selectedAssignmentObj ? selectedAssignmentObj.maxGrade : 100;
+
+                    this.students = [];
+                    this.loading = true
+                    try {
+                        if (this.selectedClass && this.selectedAssignment) {
+                            const querySnapshot = await getDocs(collection(db, 'Classes', this.selectedClass, 'StudentList'));
+                            querySnapshot.forEach((doc) => {
+                                this.students.push({
+                                    studentId: doc.data().StudentID,
+                                    Fname: doc.data().FName,
+                                    Lname: doc.data().LName,
+                                    score: null
+                                });
+                            });
+                            await this.fetchStudentScores();
+                        }
+                        // Sort students by score initially
+                        this.sortStudentsByScore();
+                    } catch (error) {
+                        console.error("Error fetching assignments: " + error)
+                    } finally {
+                        this.loading = false
+                    }
+                },
+                async fetchStudentScores() {
+                    this.loading = true
+                    try {
+                        const scoresRef = doc(db, 'Classes', this.selectedClass, 'Scores', this.selectedAssignment);
+                        const scoresSnap = await getDoc(scoresRef);
+                        if (scoresSnap.exists()) {
+                            const scoresData = scoresSnap.data();
+                            this.students.forEach(student => {
+                                if (scoresData[student.studentId]) {
+                                    student.score = scoresData[student.studentId].score;
+                                }
+                            });
+                        }
+                    } catch (error) {
+                        console.error("Error fetching scores data:", error);
+                    } finally {
+                        this.loading = false
+                    }
+                },
+
+                validateScore(student) {
+                    if (student.score > this.maxGrade) {
+                        alert(`The score for ${student.Fname} ${student.Lname} exceeds the maximum allowed score of ${this.maxGrade}.`);
+                        student.score = this.maxGrade;
+                    }
+                    if (student.score < 0) {
+                        alert(`The score for ${student.Fname} ${student.Lname} cannot be negative.`)
+                        student.score = this.maxGrade
+                    }
+                },
+                async saveAllScores() {
+                    if (!this.selectedAssignment) {
+                        alert("Please select an assignment to record scores.");
+                        return;
+                    }
+
+                    // Sort students by score (descending) before saving
+                    this.sortStudentsByScore();
+
+                    try {
+                        const scoresRef = doc(db, 'Classes', this.selectedClass, 'Scores', this.selectedAssignment);
+                        const scoresData = {};
+
+                        this.students.forEach(student => {
+                            scoresData[student.studentId] = {
+                                Fname: student.Fname,
+                                Lname: student.Lname,
+                                score: student.score
+                            };
+                        });
+
+                        await setDoc(scoresRef, scoresData, { merge: true });
+                        alert("All scores saved successfully!");
+                    } catch (error) {
+                        console.error("Error saving scores:", error);
+                    }
+                },
+                sortStudentsByScore() {
+                    this.students.sort((a, b) => b.score - a.score);
+                },
+                getScoreClass(score) {
+                    if (score === "" || score == null) {
+                        return 'bg-white text-dark'
+                    } else if (score >= this.maxGrade * 0.75) {
+                        return 'bg-success text-white';
+                    } else if (score >= this.maxGrade * 0.5) {
+                        return 'bg-warning text-dark';
+                    } else {
+                        return 'bg-danger text-white'
+                    }
+                }
+            }
+        });
+
+        vueApp.mount('#app');
+    </script>
+
+</body>
+
+</html>

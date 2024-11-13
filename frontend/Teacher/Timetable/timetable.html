@@ -1,0 +1,675 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <!-- Bootstrap CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet"
+        integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH" crossorigin="anonymous">
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3/dist/js/bootstrap.bundle.min.js"></script>
+    <!-- Vue 3 -->
+    <script src="https://unpkg.com/vue@3/dist/vue.global.js"></script>
+    <!-- Firebase Link -->
+    <script type="module" src="../../js/update.js"></script>
+    <title>Google Calendar Viewer</title>
+
+    <link rel="stylesheet" href="../teacher_navbar.css">
+    <style>
+        /* General Styling */
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            /* margin: 0; */
+            /* padding: 0; */
+        }
+        h1 {
+            font-size: 2rem;
+            color: #4285F4;
+            margin-top: 30px;
+        }
+        /* Spinner styling */
+        #loading-spinner {
+            display: none;
+            /* Hidden by default */
+            position: fixed;
+            /* Stay in place */
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            z-index: 9999;
+            /* Ensure it's above all content */
+        }
+        .spinner-border {
+            width: 3rem;
+            height: 3rem;
+            border-width: 5px;
+            animation: spin 1s linear infinite;
+        }
+        /* Animation to make it spin */
+        @keyframes spin {
+            from {
+                transform: rotate(0deg);
+            }
+
+            to {
+                transform: rotate(360deg);
+            }
+        }
+        #snackbar {
+            visibility: hidden;
+            min-width: 250px;
+            background-color: #323232;
+            color: #fff;
+            text-align: center;
+            border-radius: 4px;
+            padding: 12px;
+            position: fixed;
+            left: 50%;
+            bottom: 30px;
+            transform: translateX(-50%);
+            z-index: 1000;
+            font-size: 16px;
+            opacity: 0;
+            transition: opacity 0.5s, bottom 0.5s;
+        }
+        /* Show the snackbar when it's active */
+        #snackbar.show {
+            visibility: visible;
+            opacity: 1;
+            bottom: 50px;
+            /* Adjusts its position slightly when visible */
+        }
+        .container {
+            width: 90%;
+            max-width: 900px;
+            margin-top: 50px;
+            background-color: #fff;
+            border-radius: 10px;
+            box-shadow: 0px 0px 15px rgba(0, 0, 0, 0.1);
+            padding: 20px;
+        }
+        /* Buttons */
+        #signin-button,
+        #signout-button {
+            padding: 12px 24px;
+            background-color: #4285F4;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 16px;
+            transition: background-color 0.3s ease;
+            width: 100%;
+            max-width: 250px;
+            display: block;
+            margin: 0 auto;
+        }
+
+        #signin-button:hover,
+        #signout-button:hover {
+            background-color: #357ae8;
+        }
+
+        /* Event List Styling */
+        #calendar-events {
+            margin-top: 30px;
+            width: 100%;
+        }
+
+        #calendar-events h2 {
+            color: #333;
+            font-size: 1.5rem;
+            text-align: center;
+            margin-bottom: 20px;
+        }
+
+        .form-container {
+            margin-top: 40px;
+            padding: 20px;
+            background-color: #fafafa;
+            border-radius: 8px;
+            box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.1);
+        }
+
+        .form-container h3 {
+            font-size: 1.25rem;
+            margin-bottom: 20px;
+        }
+
+        .form-container label {
+            display: block;
+            font-weight: bold;
+            margin-top: 10px;
+        }
+
+        .form-container input {
+            width: 100%;
+            padding: 8px;
+            margin: 8px 0 20px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            font-size: 16px;
+        }
+
+        .form-container button {
+            padding: 10px 20px;
+            background-color: #28a745;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 16px;
+            width: 100%;
+        }
+
+        .form-container button:hover {
+            background-color: #218838;
+        }
+
+        #delete-event-button {
+            background-color: #dc3545;
+            display: none;
+        }
+
+        #delete-event-button:hover {
+            background-color: #c82333;
+        }
+
+        /* FullCalendar Styles */
+        .fc {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: #fff;
+            border-radius: 10px;
+            box-shadow: 0px 0px 15px rgba(0, 0, 0, 0.1);
+            padding: 20px;
+            max-width: 100%;
+            overflow: hidden;
+            margin-bottom: 30px;
+        }
+
+        .fc-toolbar {
+            border-bottom: 2px solid #ddd;
+            padding-bottom: 10px;
+            margin-bottom: 15px;
+        }
+
+        .fc-event:hover {
+            background-color: darkgreen !important;
+        }
+
+        .fc-day-today {
+            background-color: lightseagreen !important;
+            color: white;
+        }
+
+        /* 1. Header Toolbar - Buttons and Navigation */
+        .fc-button {
+            color: white;
+            /* Text color */
+            background-color: green !important;
+            /* Button and title background */
+            border: none;
+            /* Remove borders if desired */
+        }
+
+        .fc-button:hover {
+            background-color: darkgreen !important;
+            /* Hover effect for buttons */
+        }
+
+        /* 2. Day Cells - Background color of days in month/week views */
+        .fc-day,
+        .fc-daygrid-day {
+            border: 1px solid green;
+            /* Border around each day cell */
+        }
+
+        /* 3. Event Backgrounds - Event blocks on the calendar */
+        .fc-event {
+            background-color: green !important;
+            border-color: darkgreen !important;
+            color: white !important;
+            /* Event text color */
+        }
+
+        /* 4. Today’s Date Highlight */
+        .fc-day-today {
+            background-color: lightgreen !important;
+            color: white;
+            /* Text color for today's date */
+        }
+
+        /* 5. Event Hover and Active States */
+        .fc-event:hover {
+            background-color: limegreen !important;
+            /* Lighter green on hover */
+            color: white;
+            /* Ensure text is readable */
+        }
+
+        /* 6. Time Labels - Time indicators in week/day views */
+        .fc-col-header-cell,
+        .fc-timegrid-slot-label {
+            color: green;
+            /* Text color for time labels */
+        }
+
+        /* 7. Event Text Color */
+        .fc-event-title,
+        .fc-event-time {
+            color: white !important;
+            /* White text inside event */
+        }
+
+        /* Customize other calendar elements as needed */
+
+        /* Mobile Responsiveness */
+        @media (max-width: 768px) {
+            .container {
+                width: 100%;
+                padding: 15px;
+            }
+
+            #signin-button,
+            #signout-button {
+                width: 100%;
+            }
+
+            .form-container {
+                margin-top: 20px;
+            }
+
+            .form-container input,
+            .form-container button {
+                font-size: 14px;
+            }
+
+        }
+    </style>
+    <script src="https://accounts.google.com/gsi/client" async defer></script>
+    <script src="https://apis.google.com/js/api.js"></script>
+    <link href="https://cdn.jsdelivr.net/npm/fullcalendar@5.10.1/main.min.css" rel="stylesheet" />
+    <script src="https://cdn.jsdelivr.net/npm/fullcalendar@5.10.1/main.min.js"></script>
+</head>
+
+<body class="full-height bg-light">
+
+    <!-- Navbar -->
+    <nav class="navbar navbar-expand-lg navbar-dark container-fluid">
+        <a class="navbar-brand" href="../Homepage/home_teacher.html">
+            <img src="../../img/icon.png" alt="Logo" class="d-inline-block align-top"
+                style="height: 30px; width: auto; margin-left: 15px;">
+            EduFly
+        </a>
+        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav"
+            aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+            <span class="navbar-toggler-icon"></span>
+        </button>
+        <div class="collapse navbar-collapse" id="navbarNav">
+            <ul class="navbar-nav ml-auto">
+                <li class="nav-item"><a class="nav-link" href="../Homework_Tracker/Assignment_List.html">&#9997;&#65039;
+                        Homework</a></li>
+                <li class="nav-item"><a class="nav-link" href="../Timetable/timetable.html">&#128467;&#65039;
+                        Timetable</a></li>
+                <li class="nav-item"><a class="nav-link" href="../Academic_Dashboard/Student_List.html">&#127891;
+                        Progress Monitor</a></li>
+                <li class="nav-item"><a class="nav-link" href="../Announcement/Announcement_Page.html">&#128226;
+                        Announcement</a></li>
+                <li class="nav-item"><a class="nav-link" href="../Consultations/teacher_consultation.html">&#128172;
+                        Consultations</a></li>
+                <li class="nav-item">
+                    <a class="nav-link" id="profileLink" href="../Homepage/profile.html">&#128100; Profile</a>
+                    <!-- Target for dynamic name -->
+                </li>
+            </ul>
+            <ul class="navbar-nav ms-auto">
+                <button id="logout-btn" class="btn btn-primary">&#128682; Log Out</button>
+                <!-- Snackbar Notification -->
+                <div id="snackbar" class="snackbar"></div>
+            </ul>
+        </div>
+    </nav>
+
+    <!-- Main container -->
+    <div class="container">
+        <h1>Google Calendar Events</h1>
+
+        <div id="signin-button" style="display: block;">Sign in With Google</div>
+        <button id="signout-button" style="display:none; background-color:white" onclick="handleSignOut()" disabled
+            aria-disabled="true">Exit Calendar</button>
+
+        <!-- Loading Spinner -->
+        <div id="loading-spinner" class="spinner-border text-primary"
+            style="display: none; position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%);"
+            role="status">
+            <span class="visually-hidden">Loading...</span>
+        </div>
+
+
+        <div id="calendar-events"></div>
+
+        <!-- Event creation/edit form -->
+        <div id="event-form" class="form-container" style="display: none;">
+            <h3>Create or Edit Event</h3>
+            <form id="event-form-content">
+                <input type="hidden" id="event-id" />
+                <label for="event-title">Event Title:</label>
+                <input type="text" id="event-title" required><br><br>
+
+                <label for="event-start">Start Time:</label>
+                <input type="datetime-local" id="event-start" required><br><br>
+
+                <label for="event-end">End Time:</label>
+                <input type="datetime-local" id="event-end" required><br><br>
+
+                <button type="submit" style="margin-bottom: 10px">Save Event</button>
+                <button type="button" id="delete-event-button" onclick="deleteEvent()"
+                    style="margin-bottom: 10px">Delete Event</button>
+                <div id="snackbar"></div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Footer -->
+    <footer class="container-fluid text-white pt-4 mt-5 text-center" style="background-color: #343a40">
+        <div class="row">
+            <p>&copy; 2024 EduFly. All Rights Reserved.</p>
+        </div>
+    </footer>
+
+    <script type="module">
+        import { auth, db, onAuthStateChanged, getFirestore, doc, getDoc, collection, getDocs, setDoc, addDoc, deleteDoc, Timestamp } from '../../js/database.js';
+
+        const CLIENT_ID = '253069344619-3irs1nn3r35c9cfrt1qepmhqqt2gclqc.apps.googleusercontent.com';
+        const API_KEY = "";
+        const SCOPES = 'https://www.googleapis.com/auth/calendar';
+
+        let tokenClient;
+
+        function showLoadingSpinner() {
+            document.getElementById('loading-spinner').style.display = 'block';
+        }
+
+        function hideLoadingSpinner() {
+            document.getElementById('loading-spinner').style.display = 'none';
+        }
+
+        function showSnackbar(message) {
+            const snackbar = document.getElementById("snackbar");
+            snackbar.textContent = message;
+            snackbar.classList.add("show");
+
+            // Hide the snackbar after 3 seconds
+            setTimeout(() => {
+                snackbar.classList.remove("show");
+            }, 3000);
+        }
+
+        // Load GAPI client for Google Calendar API
+        async function initializeGapiClient() {
+            showLoadingSpinner();
+            try {
+                await gapi.client.init({
+                    apiKey: API_KEY,
+                    discoveryDocs: ["https://www.googleapis.com/discovery/v1/apis/calendar/v3/rest"],
+                });
+                console.log("GAPI client initialized.");
+            } catch (error) {
+                console.error("Error initializing GAPI client:", error);
+            } finally {
+                hideLoadingSpinner();
+
+                // Check if token is already stored
+                const token = localStorage.getItem("googleAccessToken");
+                if (token) {
+                    gapi.client.setToken({ access_token: token });
+                    loadCalendarEvents();
+                    document.getElementById("signin-button").style.display = "none";
+                    document.getElementById("signout-button").style.display = "block";
+                    document.getElementById("event-form").style.display = "block"; // Show event form
+                }
+            }
+        }
+
+        // Load Google Identity Services for Sign-In
+        function gisLoaded() {
+            tokenClient = google.accounts.oauth2.initTokenClient({
+                client_id: CLIENT_ID,
+                scope: SCOPES,
+                callback: handleAuthSuccess,
+            });
+
+            google.accounts.id.renderButton(
+                document.getElementById("signin-button"),
+                { theme: 'outline', size: 'large', type: 'standard', shape: 'pill' }
+            );
+
+            document.getElementById("signin-button").onclick = () => {
+                tokenClient.requestAccessToken();
+            };
+        }
+
+        function handleAuthSuccess(tokenResponse) {
+            console.log("Authentication successful.");
+            localStorage.setItem("googleAccessToken", tokenResponse.access_token);
+            document.getElementById("signin-button").style.display = "none";
+            document.getElementById("signout-button").style.display = "block";
+            document.getElementById("event-form").style.display = "block"; // Show form
+            loadCalendarEvents();
+        }
+
+        function handleSignOut() {
+            console.log("Signing out...");
+            const token = localStorage.getItem("googleAccessToken");
+            if (token) {
+                google.accounts.oauth2.revoke(token, () => {
+                    console.log("Access token revoked.");
+                    localStorage.removeItem("googleAccessToken");
+                    document.getElementById("calendar-events").innerHTML = "";
+                    document.getElementById("signin-button").style.display = "block";
+                    document.getElementById("signout-button").style.display = "none";
+                    document.getElementById("event-form").style.display = "none"; // Hide form
+                });
+            }
+        }
+
+        document.getElementById("signout-button").addEventListener("click", handleSignOut);
+
+        async function loadCalendarEvents() {
+            const token = localStorage.getItem("googleAccessToken");
+            if (!token) {
+                console.log("No access token found.");
+                return;
+            }
+
+            showLoadingSpinner()
+
+            try {
+                const response = await gapi.client.calendar.events.list({
+                    'calendarId': 'primary',
+                    'showDeleted': false,
+                    'singleEvents': true,
+                    'orderBy': 'startTime'
+                });
+
+                const events = response.result.items.map(event => ({
+                    id: event.id,
+                    title: event.summary,
+                    start: event.start.dateTime || event.start.date,
+                    end: event.end.dateTime || event.end.date
+                }));
+
+                const calendarDiv = document.getElementById("calendar-events");
+                calendarDiv.innerHTML = '';
+                const calendar = new FullCalendar.Calendar(calendarDiv, {
+                    initialView: 'dayGridMonth',
+                    events: events,
+                    eventClick: function (info) {
+                        openEventForm(info.event);
+                    }
+                });
+                calendar.render();
+            } catch (error) {
+                console.error("Error fetching calendar events:", error);
+            } finally {
+                hideLoadingSpinner();
+            }
+        }
+
+        function openEventForm(event) {
+            document.getElementById("event-id").value = event.id;
+            document.getElementById("event-title").value = event.title;
+            document.getElementById("event-start").value = event.start.toISOString().slice(0, 16);
+            document.getElementById("event-end").value = event.end.toISOString().slice(0, 16);
+            document.getElementById("delete-event-button").style.display = "inline-block";
+        }
+
+        document.getElementById('event-form-content').addEventListener('submit', async (e) => {
+            e.preventDefault();
+
+            const title = document.getElementById('event-title').value;
+            const startTime = document.getElementById('event-start').value;
+            const endTime = document.getElementById('event-end').value;
+            const eventId = document.getElementById('event-id').value;
+
+            const token = localStorage.getItem("googleAccessToken");
+            if (!token) {
+                showSnackbar("Please sign in to Google.");
+                return;
+            }
+            if (new Date(endTime) < new Date(startTime)) {
+                showSnackbar("Error: End date/time cannot be earlier than the start date/time.");
+                return;
+            }
+            const event = {
+                summary: title,
+                start: { dateTime: new Date(startTime).toISOString(), timeZone: 'UTC' },
+                end: { dateTime: new Date(endTime).toISOString(), timeZone: 'UTC' }
+            };
+
+            showLoadingSpinner()
+
+            try {
+                if (eventId) {
+                    await gapi.client.calendar.events.update({ calendarId: 'primary', eventId: eventId, resource: event });
+                    showSnackbar("Event updated successfully!")
+                } else {
+                    await gapi.client.calendar.events.insert({ calendarId: 'primary', resource: event });
+                    showSnackbar("Event added successfully!");
+                }
+                loadCalendarEvents();
+            } catch (error) {
+                console.error("Error adding/updating event:", error);
+                showSnackbar("Error: " + error.message);
+            } finally {
+                hideLoadingSpinner()
+            }
+        });
+        function gapiLoaded() {
+            gapi.load('client', initializeGapiClient);
+        }
+        window.onload = () => {
+            gapiLoaded();
+            gisLoaded();
+        };
+
+
+    </script>
+
+    <script>
+
+        function showLoadingSpinner() {
+            document.getElementById('loading-spinner').style.display = 'block';
+        }
+
+        function hideLoadingSpinner() {
+            document.getElementById('loading-spinner').style.display = 'none';
+        }
+
+        function showSnackbar(message) {
+            const snackbar = document.getElementById("snackbar");
+            snackbar.textContent = message;
+            snackbar.classList.add("show");
+
+            // Hide the snackbar after 3 seconds
+            setTimeout(() => {
+                snackbar.classList.remove("show");
+            }, 3000);
+        }
+
+
+        async function deleteEvent() {
+            const eventId = document.getElementById('event-id').value;
+            const token = localStorage.getItem("googleAccessToken");
+            if (!token) {
+                showSnackbar("Please sign in to Google.");
+                return;
+            }
+            showLoadingSpinner()
+
+            try {
+                await gapi.client.calendar.events.delete({
+                    calendarId: 'primary',
+                    eventId: eventId
+                });
+                showSnackbar("Event deleted successfully!");
+                loadCalendarEvents();
+            } catch (error) {
+                console.error("Error deleting event:", error);
+                showSnackbar("Error: " + error.message);
+            } finally {
+                hideLoadingSpinner();
+            }
+        }
+
+        async function loadCalendarEvents() {
+            const token = localStorage.getItem("googleAccessToken");
+            if (!token) {
+                console.log("No access token found.");
+                return;
+            }
+
+            try {
+                const response = await gapi.client.calendar.events.list({
+                    'calendarId': 'primary',
+                    'showDeleted': false,
+                    'singleEvents': true,
+                    'orderBy': 'startTime'
+                });
+
+                const events = response.result.items.map(event => ({
+                    id: event.id,
+                    title: event.summary,
+                    start: event.start.dateTime || event.start.date,
+                    end: event.end.dateTime || event.end.date
+                }));
+
+                const calendarDiv = document.getElementById("calendar-events");
+                calendarDiv.innerHTML = '';
+                const calendar = new FullCalendar.Calendar(calendarDiv, {
+                    initialView: 'dayGridMonth',
+                    events: events,
+                    eventClick: function (info) {
+                        openEventForm(info.event);
+                    }
+                });
+                calendar.render();
+            } catch (error) {
+                console.error("Error fetching calendar events:", error);
+            }
+        }
+
+        function gapiLoaded() {
+            gapi.load('client', initializeGapiClient);
+        }
+        window.onload = () => {
+            gapiLoaded();
+            gisLoaded();
+        };
+    </script>
+</body>
+
+</html>

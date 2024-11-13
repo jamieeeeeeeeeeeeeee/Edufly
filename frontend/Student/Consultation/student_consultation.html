@@ -1,0 +1,339 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Request Consultation</title>
+
+    <!-- Bootstrap for styling -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet"
+        integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH" crossorigin="anonymous">
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="https://unpkg.com/vue@3/dist/vue.global.js"></script>
+
+    <!-- Firebase Link -->
+    <script type="module" src="../../js/update.js"></script>
+
+    <!-- FullCalendar for displaying the calendar -->
+    <link href="https://cdn.jsdelivr.net/npm/fullcalendar@6.1.8/index.global.min.css" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/fullcalendar@6.1.8/index.global.min.js"></script>
+
+    <link rel="stylesheet" href="../student_navbar.css">
+    <style>
+        .calendar-grid {
+            display: flex;
+            flex-direction: column;
+            width: 100%;
+            margin-top: 20px;
+            font-family: Arial, sans-serif;
+        }
+
+        .calendar-nav {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 10px;
+        }
+
+        .calendar-nav button {
+            padding: 10px;
+            background-color: #4CAF50;
+            color: white;
+            border: none;
+            cursor: pointer;
+            font-size: 16px;
+        }
+
+        .calendar-nav button:hover {
+            background-color: #45a049;
+        }
+
+        .calendar-row {
+            display: grid;
+            grid-template-columns: repeat(7, 1fr);
+            gap: 10px;
+            margin-bottom: 10px;
+        }
+
+        .calendar-day.empty {
+            background-color: transparent;
+        }
+
+        .calendar-day:hover {
+            background-color: #f1f1f1;
+            cursor: pointer;
+        }
+
+        .calendar-header div {
+            font-size: 16px;
+        }
+
+        #calendar {
+            max-width: 600px;
+            margin: 0 auto;
+        }
+
+        @media screen and (max-width: 600px) {
+            .calendar-row {
+                grid-template-columns: repeat(7, 1fr);
+            }
+
+            .calendar-day {
+                font-size: 12px;
+                padding: 10px;
+            }
+
+            .calendar-nav button {
+                font-size: 14px;
+                padding: 8px;
+            }
+        }
+    </style>
+</head>
+
+<body class="full-height bg-light">
+    <!-- Navbar -->
+    <nav class="navbar navbar-expand-lg navbar-dark">
+        <a class="navbar-brand" href="../Homepage/home_student.html">
+            <img src="../../img/icon.png" alt="Logo" class="d-inline-block align-top"
+                style="height: 30px; width: auto; margin-left: 15px;">
+            EduFly
+        </a>
+        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav"
+            aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+            <span class="navbar-toggler-icon"></span>
+        </button>
+        <div class="collapse navbar-collapse" id="navbarNav">
+            <ul class="navbar-nav ml-auto">
+                <li class="nav-item"><a class="nav-link" href="../Homework_Tracker/Assignment_List.html">&#9997;&#65039;
+                        Homework</a></li>
+                <li class="nav-item"><a class="nav-link" href="../Timetable/timetable.html">&#128467;&#65039;
+                        Timetable</a></li>
+                <li class="nav-item"><a class="nav-link" href="../Summary/SummaryPage.html">&#127891; Progress
+                        Tracker</a></li>
+                <li class="nav-item"><a class="nav-link" href="../Announcement/Announcement_Page.html">&#128226;
+                        Announcement</a></li>
+                <li class="nav-item"><a class="nav-link" href="../Medical/upload_medical.html">&#128221; Form
+                        Submission</a></li>
+                <li class="nav-item"><a class="nav-link" href="../Pomodoro_Timer/pomodoro.html">&#128338; Pomodoro
+                        Timer</a></li>
+                <li class="nav-item"><a class="nav-link" href="../Consultation/student_consultation.html">&#128172; Book
+                        Consults</a></li>
+                <li class="nav-item">
+                    <a class="nav-link" id="profileLink" href="../Homepage/profile.html">&#128100; Profile</a>
+                    <!-- Target for dynamic name -->
+                </li>
+            </ul>
+            <ul class="navbar-nav ms-auto">
+                <button id="logout-btn" class="btn btn-primary">&#128682; Log Out</button>
+                <!-- Snackbar Notification -->
+                <div id="snackbar" class="snackbar">Logged out successfully!</div>
+            </ul>
+        </div>
+    </nav>
+    <!-- Main Container -->
+    <div class="container mt-5">
+        <h3>Approved Consultations Calendar</h3>
+        <div id="calendar"></div>
+    </div>
+
+
+    <!-- Consultation Form -->
+    <div id="app" class="container mt-5 mb-5">
+        <h2>Request a Consultation</h2>
+        <form @submit.prevent="submitForm">
+
+            <section>
+                <label for="subject">Subject/Topic for Consultation:</label>
+                <input type="text" id="subject" v-model="consultation.subject" class="form-control" required>
+
+                <label for="consultation-reason">Reason for Consultation:</label>
+                <textarea id="consultation-reason" v-model="consultation.reason" class="form-control" rows="4"
+                    required></textarea>
+            </section>
+
+            <section>
+                <label for="preferred-time">Preferred Date & Time for Consultation:</label>
+                <input type="datetime-local" id="preferred-time" v-model="consultation.preferredTime"
+                    class="form-control" required>
+            </section>
+
+            <button type="submit" class="btn btn-primary mt-3">Submit Request</button>
+        </form>
+    </div>
+
+    <!-- Footer -->
+    <footer class="container-fluid text-white pt-4 mt-auto text-center" style="background-color: #343a40">
+        <div class="row">
+            <p>&copy; 2024 EduFly. All Rights Reserved.</p>
+        </div>
+    </footer>
+
+    <script type="module">
+        import { auth, db, onAuthStateChanged, doc, getDoc, collection, query, where, getDocs, addDoc, serverTimestamp } from '../../js/database.js';
+
+        const vueApp = Vue.createApp({
+            data() {
+                return {
+                    student: {
+                        name: '',
+                        id: '',
+                        class: ''
+                    },
+                    consultation: {
+                        subject: '',
+                        reason: '',
+                        preferredTime: '',
+                        teacher: ''  // To hold the selected teacher's email
+                    },
+                    approvedConsultations: [],  // To hold the list of approved consultations
+                };
+            },
+            async created() {
+                await this.fetchUserData();  // Fetch user data first
+                await this.fetchApprovedConsultations();  // Fetch approved consultations after user data is fetched
+            },
+            methods: {
+                // Fetch user data and resolve once it's done
+                async fetchUserData() {
+                    return new Promise((resolve, reject) => {
+                        onAuthStateChanged(auth, async (user) => {
+                            if (user) {
+                                const userEmail = user.email;
+                                const docRef = doc(db, 'Students', userEmail);
+                                const docSnap = await getDoc(docRef);
+
+                                if (docSnap.exists()) {
+                                    const studentData = docSnap.data();
+                                    this.student.name = studentData.FName + " " + studentData.LName;
+                                    this.student.id = studentData.StudentID;
+                                    this.student.class = studentData.Class;
+                                    console.log(this.student.class); // Logging class for debugging
+                                    resolve();  // Resolve the promise once the data is fetched
+                                } else {
+                                    console.error("No such student document!");
+                                    reject(new Error('No such student document'));
+                                }
+                            } else {
+                                // console.error("User not logged in.");
+                                // window.location.href = "../../Login_Page/login.html";  // Redirect if user is not logged in
+                            }
+                        });
+                    });
+                },
+
+                async fetchApprovedConsultations() {
+                    try {
+                        const approvedConsultationsRef = collection(db, 'Classes', this.student.class, 'ApprovedConsultations');
+                        const q = query(approvedConsultationsRef, where('studentID', '==', this.student.id));
+                        const querySnapshot = await getDocs(q);
+
+                        this.approvedConsultations = querySnapshot.docs.map(doc => {
+                            const data = doc.data();
+                            // Check the type of `preferredTime` and convert accordingly
+                            let consultationDate;
+                            if (data.preferredTime && typeof data.preferredTime.toDate === 'function') {
+                                // Case 1: Firestore Timestamp
+                                consultationDate = data.preferredTime.toDate();
+                            } else if (data.preferredTime instanceof Date) {
+                                // Case 2: JavaScript Date object
+                                consultationDate = data.preferredTime;
+                            } else if (typeof data.preferredTime === 'string') {
+                                // Case 3: String format
+                                consultationDate = new Date(data.preferredTime);
+                            } else {
+                                console.error('Invalid preferredTime format:', data.preferredTime);
+                                consultationDate = null;
+                            }
+                            return {
+                                id: doc.id,
+                                title: data.subject,
+                                start: consultationDate,
+                                extendedProps: {
+                                    reason: data.reason,
+                                    studentName: data.studentName
+                                }
+                            };
+                        });
+
+                        this.renderCalendar(); // Render FullCalendar after fetching consultations
+                    } catch (error) {
+                        console.error('Error fetching approved consultations:', error);
+                    }
+                },
+
+                renderCalendar() {
+                    const calendarEl = document.getElementById('calendar');
+                    if (!calendarEl) return; // Ensure the element exists
+
+                    const calendar = new FullCalendar.Calendar(calendarEl, {
+                        initialView: 'dayGridMonth',
+                        headerToolbar: {
+                            left: 'prev,next today',
+                            center: 'title',
+                            right: 'dayGridMonth,timeGridWeek,timeGridDay'
+                        },
+                        events: this.approvedConsultations,
+                        eventClick: function (info) {
+                            const event = info.event;
+                            const { studentName, reason } = event.extendedProps;
+
+                            alert(`Consultation Details:\nSubject: ${event.title}\nStudent: ${studentName}\nReason: ${reason}`);
+                        }
+                    });
+
+                    calendar.render();
+                },
+                // Submit consultation form
+                async submitForm() {
+                    if (this.consultation.subject && this.consultation.reason && this.consultation.preferredTime) {
+                        // Convert preferred time to Date object
+                        const preferredDate = new Date(this.consultation.preferredTime);
+
+                        // Get the current date and time
+                        const currentDate = new Date();
+
+                        // Check if the preferred time is in the past
+                        if (preferredDate < currentDate) {
+                            alert('The preferred time cannot be in the past. Please select a valid future time.');
+                            return;  // Prevent form submission if the time is in the past
+                        }
+
+                        const requestData = {
+                            studentName: this.student.name,
+                            studentID: this.student.id,
+                            studentClass: this.student.class,
+                            subject: this.consultation.subject,
+                            reason: this.consultation.reason,
+                            preferredTime: this.consultation.preferredTime,
+                            createdAt: serverTimestamp(),
+                            status: 'Requested'  // Initial status set to Requested
+                        };
+
+                        try {
+                            // Path: Classes/{className}/RequestedConsultations
+                            const classRef = collection(db, 'Classes', this.student.class, 'RequestedConsultations');
+                            await addDoc(classRef, requestData);
+                            alert('Consultation request submitted successfully!');
+                            // Clear consultation fields (except for name, ID, and class)
+                            this.consultation.subject = '';
+                            this.consultation.reason = '';
+                            this.consultation.preferredTime = '';
+                        } catch (error) {
+                            console.error('Error submitting consultation request: ', error);
+                            alert('Failed to submit request.');
+                        }
+                    } else {
+                        alert('Please fill in all the fields.');
+                    }
+                }
+            }
+        });
+
+        vueApp.mount('#app');
+    </script>
+
+
+</body>
+
+</html>
