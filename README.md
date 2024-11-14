@@ -1,99 +1,145 @@
-# EduFly-Reloaded
+# EduFly
 
+The goal of this project is to develop an online platform that simplifies administrative tasks for secondary school teachers in Singapore. Leveraging student learning devices, the app centralizes communication and documentation, helping to reduce the administrative burden on educators. This allows teachers to dedicate more time to their core responsibility of educating and guiding students.
 
-# BELOW IS THE README FOR THE UPLOAD AND DOWNLOADING OF DOCUMENTS
-# PDF and Document Uploader with View and Download
+# About Us
 
-This project provides a full-stack application for uploading and viewing documents, specifically for homework assignments (PDF, DOC, DOCX) and medical certificates (PDF and image formats). Users can upload, view, and download documents through a web interface.
+## Team Members
+
+| S/N | Name           | Email ID         | 
+|-----|----------------|------------------|
+| 1   | Jamie Tan      | jamie.tan.2023   |
+| 2   | Leandro Gay    | leandro.gay.2023 |
+| 3   | Ryan Ng        | ryanng.2023      |
+| 4   | Ryan Bangras   | rnbangras.2023   |
 
 ## Table of Contents
 - [Features](#features)
 - [Tech Stack](#tech-stack)
 - [Setup](#setup)
 - [Folder Structure](#folder-structure)
-- [Environment Variables](#environment-variables)
 - [Running the Project](#running-the-project)
-- [Usage](#usage)
+- [Login Credentials](#login-credentials)
 - [Endpoints](#endpoints)
-- [Troubleshooting](#troubleshooting)
 
 ## Features
-- **File Upload**: Upload homework and medical certificate files with validation.
-  - Homework: PDF, DOC, DOCX.
-  - Medical Certificates: PDF, JPG, JPEG, PNG.
-- **View and Download**: View PDF documents in the browser and download documents.
-- **Error Handling**: Prevents upload of invalid file types.
+
+- **Homework & Task Management**:  
+  - **Teachers**: Upload, track, and manage assignments and deadlines.  
+  - **Students**: View and track upcoming assignments and deadlines.
+
+- **Dynamic Timetable**:  
+  Easily view and manage class schedules for both teachers and students.
+
+- **Progress Monitoring**:  
+  - **Teachers**: Monitor grades and attendance for all students within a class.  
+  - **Students**: Access and track personal academic progress, including grades and attendance.
+
+- **Announcements & Notifications**:  
+  Stay updated with the latest important announcements and notifications.
+
+- **Assignment Submission & Viewing**:  
+  Simple and efficient process for students to submit homework and for teachers to view and grade them.
+
+- **Medical Certificate Submission & Viewing**:  
+  Submit and view medical certificates easily within the platform.
+
+- **Consultation Booking**:  
+  Facilitates the booking of consultations between teachers and students.
+
+- **Pomodoro Timer**:  
+  Boost productivity by working in focused intervals with the Pomodoro technique.
 
 ## Tech Stack
-- **Frontend**: HTML, JavaScript, Bootstrap
+- **Frontend**: HTML, JavaScript, CSS, Bootstrap
 - **Backend**: Node.js, Express, Multer for file handling
-- **Database**: MongoDB Atlas for storing files and metadata
+- **Database**: Firebase for storing of user data, MongoDB Atlas for storing files and metadata
 
 ## Setup
 
 ### Prerequisites
 - **Node.js**: Install Node.js (v14 or above recommended).
-- **MongoDB Atlas**: Set up a MongoDB Atlas cluster and create two databases:
-  - `homework_db` for homework uploads
-  - `medical_certificate_db` for medical certificate uploads
-- **MongoDB Database Access**: Create a user with readWrite permissions.
 
 ### Folder Structure
+
 ```
-project_root/
-├── backend/
-│   ├── config/
-│   │   ├── dbHomework.js               # MongoDB connection for homework
-│   │   └── dbMedicalCertificate.js     # MongoDB connection for medical certificates
-│   ├── models/
-│   ├── routes/
-│   │   ├── homeworkRoutes.js           # Routes for homework upload and view
-│   │   └── medicalCertificateRoutes.js # Routes for medical certificate upload and view
-│   ├── app.js                          # Main backend server file
-│   └── package.json                    # Backend dependencies
-└── frontend/
-    ├── upload_homework.html            # Homework upload form
-    ├── upload_medical.html             # Medical certificate upload form
-    ├── view_homework.html              # View and download homework files
-    ├── view_medical.html              # View and download medical certificates
-    └── js/
-        ├── homeworkUpload.js           # JavaScript for homework upload
-        ├── medicalUpload.js            # JavaScript for medical certificate upload
-        └── viewFiles.js                # JavaScript for viewing and downloading files
+EduFly-Reloaded
+├── backend
+│   ├── config
+│   │   ├── dbHomework.js
+│   │   └── dbMedicalCertificate.js
+│   ├── models
+│   │   ├── homeworkModel.js
+│   │   └── medicalCertificateModel.js
+│   ├── node_modules
+│   ├── routes
+│   │   ├── homeworkRoutes.js
+│   │   └── medicalCertificateRoutes.js
+│   ├── app.js
+│   ├── package-lock.json
+│   ├── package.json
+│   └── vercel.json
+├── frontend
+│   ├── About_Us
+│   ├── css
+│   ├── img
+│   ├── js
+│   ├── Login_Page
+│   │   ├── classroom.avif
+│   │   ├── login.html
+│   │   └── login.js
+│   ├── Student
+│   │   ├── Announcement
+│   │   ├── Consultation
+│   │   ├── Homepage
+│   │   ├── Homework_Tracker
+│   │   ├── Medical
+│   │   ├── Pomodoro_Timer
+│   │   ├── Summary
+│   │   ├── Timetable
+│   │   └── student_navbar.css
+│   ├── Teacher
+│   │   ├── Academic_Dashboard
+│   │   ├── Announcement
+│   │   ├── Consultations
+│   │   ├── Homepage
+│   │   ├── Homework_Tracker
+│   │   ├── Timetable
+│   │   └── teacher_navbar.css
+│   ├── favicon.ico
+│   └── index.html
+├── node_modules
+├── .gitattributes
+├── .gitignore
+├── package-lock.json
+├── package.json
+├── secret.env     # INSERT ENVIRONMENT FILE HERE 
+└── README.md
 ```
-
-## Environment Variables
-
-Set up the MongoDB URI for each database in `dbHomework.js` and `dbMedicalCertificate.js`. Update these files with your MongoDB credentials:
-
-```javascript
-// dbHomework.js
-const mongoose = require('mongoose');
-const connectHomeworkDB = async () => {
-    return mongoose.createConnection('mongodb+srv://<username>:<password>@cluster0.mongodb.net/homework_db?retryWrites=true&w=majority');
-};
-
-// dbMedicalCertificate.js
-const mongoose = require('mongoose');
-const connectMedicalCertificateDB = async () => {
-    return mongoose.createConnection('mongodb+srv://<username>:<password>@cluster0.mongodb.net/medical_certificate_db?retryWrites=true&w=majority');
-};
-```
-
-Replace `<username>`, `<password>`, and `<database>` with your MongoDB credentials.
 
 ## Running the Project
 
-### 1. Install Dependencies
+### Option A: Visit our deployed website (RECOMMENDED)
 
-#### Backend
+#### Hosted link: (TO BE UPDATED)
+[Edufly](URL) update link please
+
+### Option B: Run on Localhost
+
+#### 1. Setting Up API Keys
+
+To enable connections to the databases, place the `secret.env` file, which contains the necessary API keys, into the project’s root directory. This file can be obtained from the group’s shared submission documents. Ensure this file is correctly positioned to allow seamless integration and secure database access.
+
+#### 2. Install Dependencies
+
+##### Backend
 Navigate to the backend directory and install dependencies:
 ```bash
 cd backend
 npm install
 ```
 
-### 2. Start Backend Server
+#### 3. Start Backend Server
 Run the backend server:
 ```bash
 node app.js
@@ -101,16 +147,16 @@ node app.js
 
 If setup is successful, the console should display:
 ```
-Server running on http://localhost:5000
 Connected to Homework Database on MongoDB Atlas
 Connected to Medical Certificate Database on MongoDB Atlas
+Server running on http://localhost:3000
 ```
 
-### 3. Serve the Frontend
-To serve the frontend files, you can use http-server or Live Server extension in Visual Studio Code.
+#### 4. Serve the Frontend
+To serve the frontend files, you can use http-server.
 
-#### Using http-server
-1. Install http-server globally if you haven't already:
+##### Using http-server
+1. Install http-server globally:
 ```bash
 npm install -g http-server
 ```
@@ -125,23 +171,13 @@ cd ../frontend
 http-server -p 5500
 ```
 
-4. Open your browser and navigate to:
-- Upload Homework: http://localhost:5500/upload_homework.html
-- View Homework: http://localhost:5500/view_homework.html
-- Upload Medical Certificate: http://localhost:5500/upload_medical.html
-- View Medical Certificates: http://localhost:5500/view_medical.html
+## Login Credentials
 
-## Usage
+| Account Type     | Username                  | Password        | Additional Info               |
+|------------------|---------------------------|-----------------|-------------------------------|
+| Teacher Account  | `chewhuile@gmail.com`      | `testing123$$`  | Oversees 3A and 4A classes     |
+| Student Account  | `toddlee8888@gmail.com`    | `testing123$$`  | Student in class 3A           |
 
-### Upload Homework or Medical Certificate
-1. Go to the relevant upload page.
-2. Select a file with a valid extension.
-3. Enter your Student ID and submit.
-4. If successful, a message will display confirming the upload.
-
-### View and Download Files
-1. Go to the view page for either homework or medical certificates.
-2. Click a file to view or download. Supported files (PDF) open directly in the browser; other types prompt for download.
 
 ## Endpoints
 
@@ -149,7 +185,7 @@ The backend provides the following API endpoints:
 
 ### Homework Endpoints
 - **Upload Homework**: `POST /api/upload-homework`
-  - Body: Form-data with `studentId` and `homeworkFile` (PDF, DOC, DOCX).
+  - Body: Form-data with `studentId`, `sectionId`, `title` and `homeworkFile` (PDF, DOC, DOCX).
 - **Get All Homework**: `GET /api/homeworks`
 - **View Homework by ID**: `GET /api/homeworks/:id`
   - Responds with a PDF or downloadable file.
@@ -160,18 +196,3 @@ The backend provides the following API endpoints:
 - **Get All Medical Certificates**: `GET /api/medical-certificates`
 - **View Medical Certificate by ID**: `GET /api/medical-certificates/:id`
   - Responds with a PDF or downloadable file.
-
-## Troubleshooting
-
-### Common Errors
-
-#### Failed to Load PDF Document:
-- Ensure the backend sets the correct Content-Type headers.
-- Check that files are uploaded with the correct format and encoding.
-
-#### MongoDB Connection Issues:
-- Double-check the MongoDB URI in `dbHomework.js` and `dbMedicalCertificate.js`.
-- Ensure your IP is whitelisted in MongoDB Atlas.
-
-#### Invalid File Type:
-- Ensure that only allowed file types are uploaded based on frontend accept attributes and backend validation.
