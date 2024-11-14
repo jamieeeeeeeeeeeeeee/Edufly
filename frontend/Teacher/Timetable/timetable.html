@@ -12,9 +12,9 @@
     <script src="https://unpkg.com/vue@3/dist/vue.global.js"></script>
     <!-- Firebase Link -->
     <script type="module" src="../../js/update.js"></script>
-    <title>Google Calendar Viewer</title>
+    <title>Edufly - Class Calendar</title>
 
-    <link rel="stylesheet" href="../teacher_navbar.css">
+    <link rel="stylesheet" href="../../css/teacher_navbar.css">
     <style>
         /* General Styling */
         body {
@@ -335,11 +335,7 @@
 
     <!-- Main container -->
     <div class="container">
-        <h1>Google Calendar Events</h1>
-
-        <div id="signin-button" style="display: block;">Sign in With Google</div>
-        <button id="signout-button" style="display:none; background-color:white" onclick="handleSignOut()" disabled
-            aria-disabled="true">Exit Calendar</button>
+        <!-- <h1>Google Calendar Events</h1> -->
 
         <!-- Loading Spinner -->
         <div id="loading-spinner" class="spinner-border text-primary"
@@ -351,6 +347,11 @@
 
         <div id="calendar-events"></div>
 
+
+        <div id="signin-button" style="display: block;">Sign in With Google</div>
+        <button id="signout-button" style="display:none; background-color:white" onclick="handleSignOut()" disabled
+            aria-disabled="true">Exit Calendar</button>
+
         <!-- Event creation/edit form -->
         <div id="event-form" class="form-container" style="display: none;">
             <h3>Create or Edit Event</h3>
@@ -360,10 +361,10 @@
                 <input type="text" id="event-title" required><br><br>
 
                 <label for="event-start">Start Time:</label>
-                <input type="datetime-local" id="event-start" required><br><br>
+                <input type="datetime-local" id="event-start" required onfocus="setMinDate()"><br><br>
 
                 <label for="event-end">End Time:</label>
-                <input type="datetime-local" id="event-end" required><br><br>
+                <input type="datetime-local" id="event-end" required onfocus="setMinDate()"><br><br>
 
                 <button type="submit" style="margin-bottom: 10px">Save Event</button>
                 <button type="button" id="delete-event-button" onclick="deleteEvent()"
@@ -372,6 +373,8 @@
             </form>
         </div>
     </div>
+
+    
 
     <!-- Footer -->
     <footer class="container-fluid text-white pt-4 mt-5 text-center" style="background-color: #343a40">
@@ -661,6 +664,12 @@
                 console.error("Error fetching calendar events:", error);
             }
         }
+
+        function setMinDate() { // Makes sure that users can't create/edit calendar events in the past
+        const today = new Date().toISOString().slice(0, 16); // Current date in YYYY-MM-DDTHH:MM format
+        document.getElementById("event-start").setAttribute("min", today);
+        document.getElementById("event-end").setAttribute("min", today);
+    }
 
         function gapiLoaded() {
             gapi.load('client', initializeGapiClient);

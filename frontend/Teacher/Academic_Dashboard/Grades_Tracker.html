@@ -13,9 +13,9 @@
     <!-- Firebase Link -->
     <script type="module" src="../../js/update.js"></script>
 
-    <link rel="stylesheet" href="../teacher_navbar.css">
+    <link rel="stylesheet" href="../../css/teacher_navbar.css">
 
-    <title>EduFly Portal</title>
+    <title>EduFly - Grades Tracker</title>
     <style>
         .card {
             margin-bottom: 15px;
@@ -60,12 +60,13 @@
             </ul>
         </div>
     </nav>
+    <!-- Main Container -->
     <div id="app" class="container mt-4">
-        <h2>Scores for {{ selectedClass }} - {{ selectedAssignmentTitle }} </h2>
+        <h2 style="margin-bottom: 15px">Scores for {{ selectedClass }} - {{ selectedAssignmentTitle }} </h2>
 
         <label for="assignmentSelect" class="form-label">Select Assignment:</label>
         <select v-model="selectedAssignment" @change="fetchScores" id="assignmentSelect" class="form-select mb-4">
-            <option value="" disabled>Select an assignment</option>
+            <option value="" disabled>No assignment selected.</option>
             <option v-for="assignment in assignments" :key="assignment.id" :value="assignment.id">
                 {{ assignment.title }}
             </option>
@@ -100,6 +101,10 @@
             @click="saveAllScores">
             Save Grades
         </button>
+        <div id="notification" :class="snackbarClass" v-if="snackbarVisible"
+        style="opacity: 1; background-color: black; color: white; min-width: 250px; text-align: center; border-radius: 4px; padding: 16px; position:fixed; left: 50%; bottom: 30px; font-size: 17px; z-index:9999; transition: visibility 0s, opacity 0.5s linear; transform: translateX(-50%); ">
+            {{ snackbarMessage }}
+        </div>
     </div>
     <!-- Footer -->
     <footer class="container-fluid text-white pt-4 mt-auto text-center" style="background-color: #343a40">
@@ -121,7 +126,9 @@
                     selectedAssignment: "",
                     maxGrade: 0, // Default maxGrade
                     students: [],
-                    loading: false
+                    loading: false,
+                    snackbarMessage: "",
+                    snackbarVisible: false,
                 };
             },
             computed: {
@@ -207,19 +214,30 @@
                     }
                 },
 
+
+                showSnackbar(message, type = "success") {
+                    this.snackbarMessage = message;
+                    this.snackbarVisible = true;
+                    setTimeout(() => {
+                        this.snackbarVisible = false;
+                    }, 3000); // Snackbar will disappear after 3 seconds
+                },
+
                 validateScore(student) {
                     if (student.score > this.maxGrade) {
-                        alert(`The score for ${student.Fname} ${student.Lname} exceeds the maximum allowed score of ${this.maxGrade}.`);
+                        this.showSnackbar(
+                            `The score for ${student.Fname} ${student.Lname} exceeds the maximum allowed score of ${this.maxGrade}.`
+                        );
                         student.score = this.maxGrade;
                     }
                     if (student.score < 0) {
-                        alert(`The score for ${student.Fname} ${student.Lname} cannot be negative.`)
+                        this.showSnackbar(`The score for ${student.Fname} ${student.Lname} cannot be negative.`);
                         student.score = this.maxGrade
                     }
                 },
                 async saveAllScores() {
                     if (!this.selectedAssignment) {
-                        alert("Please select an assignment to record scores.");
+                        this.showSnackbar("Please select an assignment to record scores.");
                         return;
                     }
 
@@ -239,9 +257,10 @@
                         });
 
                         await setDoc(scoresRef, scoresData, { merge: true });
-                        alert("All scores saved successfully!");
+                        this.showSnackbar("All scores saved successfully!");
                     } catch (error) {
                         console.error("Error saving scores:", error);
+                        this.showSnackbar("Failed to save scores. Please try again.");
                     }
                 },
                 sortStudentsByScore() {

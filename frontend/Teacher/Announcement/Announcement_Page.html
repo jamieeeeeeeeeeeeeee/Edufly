@@ -12,9 +12,9 @@
     <!-- Firebase Link -->
     <script type="module" src="../../js/update.js"></script>
 
-    <link rel="stylesheet" href="../teacher_navbar.css">
+    <link rel="stylesheet" href="../../css/teacher_navbar.css">
 
-    <title>EduFly Portal</title>
+    <title>EduFly - Announcements</title>
 </head>
 
 <body class="full-height bg-light">
@@ -56,15 +56,11 @@
     </nav>
 
     <!-- Main Container -->
-    <div class="container-fluid">
-        <div class="row">
-            <h1 style="text-align: center; padding: 40px;">Select a Class</h1>
-        </div>
-    </div>
-
     <div id="app" class="container mt-4 mb-5">
+        <h2 style="margin-bottom: 15px">Announcements</h2>
         <label for="classSelect" class="form-label">Select Class:</label>
         <select v-model="selectedClass" @change="fetchAnnouncements" id="classSelect" class="form-select mb-4">
+            <option value="" disabled>No class selected</option>
             <option v-for="classItem in classes" :key="classItem" :value="classItem">
                 {{ classItem }}
             </option>

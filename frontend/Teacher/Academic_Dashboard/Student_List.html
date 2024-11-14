@@ -17,14 +17,12 @@
     <script src="https://cdn.jsdelivr.net/npm/jspdf@2.5.1/dist/jspdf.umd.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.5.25/jspdf.plugin.autotable.min.js"></script>
 
-    <link rel="stylesheet" href="../teacher_navbar.css">
+    <link rel="stylesheet" href="../../css/teacher_navbar.css">
 
-    <title>EduFly Portal</title>
+    <title>EduFly - Student List</title>
     <style>
-        /* Highlight row with high absence count */
-        .absent-warning {
-            background-color: #ffdddd !important;
-            /* Light red background */
+        table tbody tr.absent-warning {
+            border-left: 6px solid #dc3545 !important; /* Red left border */
         }
     </style>
 </head>
@@ -70,9 +68,11 @@
     <!-- Main Container -->
     <div id="app" class="container mt-4">
 
+        <h2 style="margin-bottom:15px">Student Progress Monitor</h2>
+
         <label for="classSelect" class="form-label">Select Class:</label>
         <select v-model="selectedClass" @change="fetchStudents" id="classSelect" class="form-select mb-4">
-            <option value="" disabled>Select a class</option>
+            <option value="" disabled>No class selected</option>
             <option v-for="className in classes" :key="className" :value="className">
                 {{ className }}
             </option>
@@ -98,9 +98,9 @@
                 Download Student List
             </button>
         </div>
-        <div v-else>No class selected.</div>
 
         <h2 v-if="!loading && selectedClass">Students in {{ selectedClass }}</h2>
+        <p v-if="!loading && selectedClass">Note: Students with more than 20 absences are marked red.</p>
         <table v-if="!loading && selectedClass" class="table table-striped">
             <thead>
                 <tr>
@@ -111,7 +111,7 @@
             </thead>
             <tbody>
                 <tr v-for="student in students" :key="student.studentId" @click="viewStudentInfo(student)"
-                    :class="{'absent-warning': student.AbsentCount >= Number(0)}">
+                    :class="{'absent-warning': student.AbsentCount > 20}">
                     <td><a href="#" @click.prevent="viewStudentInfo(student)">{{ student.studentId }}</a></td>
                     <td>{{ student.Fname }}</td>
                     <td>{{ student.Lname }}</td>
@@ -161,7 +161,7 @@
                     <label for="contact" class="form-label">Emergency Contact No. </label>
                     <input type="text" v-model="newStudent.EmergencyContact" id="contact" class="form-control" required>
                 </div>
-                <button type="submit" class="btn btn-success">Add Student</button>
+                <button type="submit" class="btn btn-success me-2">Add Student</button>
                 <button type="button" class="btn btn-secondary" @click="cancelAddStudent">Cancel</button>
             </form>
         </div>
@@ -289,7 +289,7 @@
                         });
                         this.fetchStudents();
                         this.cancelAddStudent();
-                    } 
+                    }
                 },
 
                 cancelAddStudent() {

@@ -13,9 +13,9 @@
     <!-- Firebase Link -->
     <script type="module" src="../../js/update.js"></script>
 
-    <title>EduFly Portal</title>
+    <title>EduFly - Assignment List</title>
 
-    <link rel="stylesheet" href="../teacher_navbar.css">
+    <link rel="stylesheet" href="../../css/teacher_navbar.css">
     <style>
         table.table {
             border-collapse: separate;
@@ -179,17 +179,16 @@
 
     <!-- Main container -->
     <div id="app" class="container mt-4">
-        <h2>Assignment List</h2>
-        <label for="classSelect" class="form-label">Select Class:</label>
+        <h2 style="margin-bottom:15px">Assignment List</h2>
+        <label for="classSelect" class="form-label ">Select Class:</label>
         <select v-model="selectedClass" @change="fetchAssignments" id="classSelect" class="form-select mb-4">
-            <option value="" disabled>Select a class</option>
+            <option value="" disabled>No class selected.</option>
             <option v-for="className in classes" :key="className" :value="className">
                 {{ className }}
             </option>
         </select>
 
         <h2 v-if="selectedClass">Assignments for {{ selectedClass }}</h2>
-        <p v-else>No class selected.</p>
 
         <!-- Add Assignment Button and Form -->
         <button v-if="selectedClass" @click="showAddAssignmentForm = !showAddAssignmentForm"
@@ -218,7 +217,7 @@
                     :min="new Date().toISOString().slice(0, 16)">
             </div>
             <div class="mb-3">
-                <label for="maxGrade" class="form-label">Maximum Grade</label>
+                <label for="maxGrade" class="form-label">Maximum Mark</label>
                 <input type="number" v-model="newAssignment.maxGrade" id="maxGrade" class="form-control" min="1"
                     max="100" placeholder="eg. 30">
             </div>
