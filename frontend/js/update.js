@@ -55,7 +55,7 @@ document.getElementById("logout-btn").addEventListener("click", () => {
             // Delay redirection for the snackbar display
             setTimeout(() => {
                 localStorage.removeItem('isLoggingOut'); // Clear the logout flag
-                window.location.href = "../../Login_page/login.html"; // Redirect after snackbar
+                window.location.href = "../../Login_Page/login.html"; // Redirect after snackbar
             }, 1000); // Adjust delay to match snackbar display time
         })
         .catch((error) => {
