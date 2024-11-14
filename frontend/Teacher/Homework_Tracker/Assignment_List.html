@@ -188,41 +188,45 @@
             </option>
         </select>
 
-        <h2 v-if="selectedClass">Assignments for {{ selectedClass }}</h2>
+        <!-- <h2 v-if="selectedClass">Assignments for {{ selectedClass }}</h2> -->
 
         <!-- Add Assignment Button and Form -->
         <button v-if="selectedClass" @click="showAddAssignmentForm = !showAddAssignmentForm"
-            class="btn btn-primary mb-3">
+            class="btn btn-primary mb-3 me-2">
             {{ showAddAssignmentForm ? 'Cancel' : 'Add Assignment' }}
         </button>
         <!-- <a v-if="assignments.length > 0 && selectedClass" href="../view_homework.html" target="_blank" class="btn btn-info mb-3">View Submitted Assignments</a> -->
         <a v-if="assignments.length > 0 && selectedClass" :href="`./view_homework.html?class=${selectedClass}`"
-            target="_blank" class="btn btn-info mb-3" style="margin-left: 10px;">
+            target="_blank" class="btn btn-info ms-auto mb-3" style="margin-left: 10px;">
             View Submitted Assignments
         </a>
 
-        <div v-if="showAddAssignmentForm" class="mb-4">
-            <h3>Add New Assignment</h3>
-            <div class="mb-3">
+        <!-- Form to Add New Assignment (Styled Similar to Add New Announcement) -->
+        <div v-if="showAddAssignmentForm" class="card p-3 mb-3">
+            <h5>Add New Assignment</h5>
+            <div class="mb-2">
                 <label for="title" class="form-label">Title</label>
-                <input type="text" v-model="newAssignment.title" id="title" class="form-control">
+                <input type="text" v-model="newAssignment.title" id="title" class="form-control"
+                    placeholder="Enter title">
             </div>
-            <div class="mb-3">
+            <div class="mb-2">
                 <label for="description" class="form-label">Description</label>
-                <textarea v-model="newAssignment.description" id="description" class="form-control"></textarea>
+                <textarea v-model="newAssignment.description" id="description" class="form-control"
+                    placeholder="Enter description"></textarea>
             </div>
-            <div class="mb-3">
+            <div class="mb-2">
                 <label for="deadline" class="form-label">Deadline (Date & Time)</label>
                 <input type="datetime-local" v-model="newAssignment.deadline" id="deadline" class="form-control"
                     :min="new Date().toISOString().slice(0, 16)">
             </div>
-            <div class="mb-3">
+            <div class="mb-2">
                 <label for="maxGrade" class="form-label">Maximum Mark</label>
                 <input type="number" v-model="newAssignment.maxGrade" id="maxGrade" class="form-control" min="1"
                     max="100" placeholder="eg. 30">
             </div>
             <button @click="addAssignment" class="btn btn-success">Submit Assignment</button>
         </div>
+
 
         <!-- Loading Spinner -->
         <div v-if="loading" class="text-center">
@@ -324,6 +328,7 @@
                     assignments: [],
                     showAddAssignmentForm: false,
                     newAssignment: { title: "", description: "", deadline: "", maxGrade: null },
+                    maxGradeError: "", // New property to handle error message
                     editingAssignmentId: null,
                     editAssignmentData: { title: "", description: "", deadlineDate: "", deadlineTime: "", maxGrade: null },
                     loading: false,
@@ -390,10 +395,18 @@
                     return { date: formattedDate, time: formattedTime };
                 },
                 async addAssignment() {
+                    // Form Validation
                     if (!this.selectedClass || !this.newAssignment.title || !this.newAssignment.description || !this.newAssignment.deadline || !this.newAssignment.maxGrade) {
                         this.showSnackbar("Please fill out all assignment fields.");
                         return;
                     }
+
+                    // Validate maxGrade
+                    if (!this.newAssignment.maxGrade || this.newAssignment.maxGrade <= 0) {
+                        this.showSnackbar("Maximum Mark must be a positive number.");
+                        return;
+                    }
+                    this.maxGradeError = ""; // Clear error if validation passes
                     this.loading = true;
 
                     try {
@@ -430,9 +443,6 @@
                         this.loading = false
                     }
                 },
-
-
-
                 editAssignment(assignment) {
                     this.editingAssignmentId = assignment.id;
                     this.editAssignmentData = {
@@ -490,6 +500,9 @@
                     } finally {
                         this.loading = false;
                     }
+                },
+                clearAddAssignment() {
+                    this.newAssignment = { title: "", description: "", deadline: "", maxGrade: null };
                 },
 
                 showSnackbar(message) {

@@ -66,9 +66,11 @@
             </option>
         </select>
 
-        <!-- Add Announcement Button -->
-        <button v-if="selectedClass" @click="showAddAnnouncementForm = true" class="btn btn-primary mb-3">Add
-            Announcement</button>
+        <!-- Add Assignment Button and Form -->
+        <button v-if="selectedClass" @click="showAddAnnouncementForm = !showAddAnnouncementForm"
+            class="btn btn-primary mb-3 me-2">
+            {{ showAddAnnouncementForm ? 'Cancel' : 'Add Announcement' }}
+        </button>
 
         <!-- Form to Add New Announcement (Shows When Add Button is Clicked) -->
         <div v-if="showAddAnnouncementForm" class="card p-3 mb-3">

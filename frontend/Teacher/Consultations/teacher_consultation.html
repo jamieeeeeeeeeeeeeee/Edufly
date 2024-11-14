@@ -4,7 +4,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Edufly - Consultations</title>
+    <title>EduFly - Consultations</title>
 
     <!-- Bootstrap for styling -->
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet"
@@ -144,6 +144,10 @@
             </tbody>
         </table>
 
+        <!-- Snackbar Notification -->
+        <div v-if="snackbarMessage" class="snackbar show">{{ snackbarMessage }}</div>
+
+
         <!-- Snackbar for Notifications -->
         <div class="toast-container position-fixed bottom-0 end-0 p-3">
             <div id="noConsultationsToast" class="toast align-items-center text-bg-dark" role="alert"
@@ -186,7 +190,8 @@
                         reason: '',
                         formattedPreferredTime: ''
                     }, // Initialize with default properties
-                    loading: false
+                    loading: false,
+                    snackbarMessage: '' // New snackbar variable
                 };
             },
             async created() {
@@ -208,6 +213,16 @@
                         }
                     });
                 },
+
+                showSnackbar(message) {
+                    this.snackbarMessage = message;
+
+                    // Automatically hide the snackbar after 3 seconds
+                    setTimeout(() => {
+                        this.snackbarMessage = '';
+                    }, 3000);
+                },
+
                 async fetchConsultations() {
                     if (this.selectedClass) {
                         this.loading = true
@@ -337,15 +352,15 @@
                             // Now, delete the consultation from the RequestedConsultations
                             await deleteDoc(consultationRef);
 
-                            alert('Consultation request approved and moved to ApprovedConsultations!');
+                            this.showSnackbar('Consultation request approved and moved to ApprovedConsultations!');
                             this.fetchConsultations(); // Refresh the consultation list
                         } else {
                             console.error('Consultation document does not exist');
-                            alert('Consultation not found.');
+                            this.showSnackbar('Consultation not found.');
                         }
                     } catch (error) {
                         console.error('Error approving consultation:', error);
-                        alert('Failed to approve request.');
+                        this.showSnackbar('Failed to approve request.');
                     }
                 },
 
@@ -358,13 +373,13 @@
                         // Delete the consultation document
                         await deleteDoc(consultationRef);
 
-                        alert('Consultation rejected successfully!');
+                        this.showSnackbar('Consultation rejected successfully!');
 
                         // Refresh the list of consultations after deletion
                         this.fetchConsultations();
                     } catch (error) {
                         console.error('Error rejecting consultation:', error);
-                        alert('Failed to reject consultation.');
+                        this.showSnackbar('Failed to reject consultation.');
                     }
                 }
             }

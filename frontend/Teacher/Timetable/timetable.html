@@ -12,7 +12,7 @@
     <script src="https://unpkg.com/vue@3/dist/vue.global.js"></script>
     <!-- Firebase Link -->
     <script type="module" src="../../js/update.js"></script>
-    <title>Edufly - Class Calendar</title>
+    <title>EduFly - Timetable</title>
 
     <link rel="stylesheet" href="../../css/teacher_navbar.css">
     <style>
@@ -523,12 +523,23 @@
         }
 
         function openEventForm(event) {
-            document.getElementById("event-id").value = event.id;
-            document.getElementById("event-title").value = event.title;
-            document.getElementById("event-start").value = event.start.toISOString().slice(0, 16);
-            document.getElementById("event-end").value = event.end.toISOString().slice(0, 16);
-            document.getElementById("delete-event-button").style.display = "inline-block";
-        }
+    document.getElementById("event-id").value = event.id;
+    document.getElementById("event-title").value = event.title;
+
+    // Convert to local time using toLocaleString and get ISO format for datetime-local input
+    const startTime = new Date(event.start);
+    const endTime = new Date(event.end);
+
+    // Get local time as string in YYYY-MM-DDTHH:MM format for datetime-local input
+    const startTimeLocal = startTime.toLocaleString('sv-SE', { timeZone: Intl.DateTimeFormat().resolvedOptions().timeZone });
+    const endTimeLocal = endTime.toLocaleString('sv-SE', { timeZone: Intl.DateTimeFormat().resolvedOptions().timeZone });
+
+    // Set values for the datetime-local fields
+    document.getElementById("event-start").value = startTimeLocal.replace(" ", "T");
+    document.getElementById("event-end").value = endTimeLocal.replace(" ", "T");
+
+    document.getElementById("delete-event-button").style.display = "inline-block";
+}
 
         document.getElementById('event-form-content').addEventListener('submit', async (e) => {
             e.preventDefault();

@@ -9,6 +9,31 @@ function showSnackbar(message) {
     setTimeout(() => { snackbar.className = snackbar.className.replace('show', ''); }, 3000);
 }
 
+function getErrorMessage(errorCode) {
+    switch (errorCode) {
+        case 'auth/invalid-email':
+            return 'The email address is not valid. Please check the format.';
+        case 'auth/user-not-found':
+            return 'No user found with this email address.';
+        case 'auth/wrong-password':
+            return 'Incorrect password. Please try again.';
+        case 'auth/network-request-failed':
+            return 'Network error. Please check your internet connection.';
+        default:
+            return 'An unknown error occurred. Please try again later.';
+    }
+}
+
+// Function to validate password strength
+function validatePassword(password) {
+    const passwordMinLength = 6; // Example: password must be at least 6 characters
+    if (password.length < passwordMinLength) {
+        return `Password must be at least ${passwordMinLength} characters long.`;
+    }
+    // Additional password checks can be added here (e.g., for numbers, special characters)
+    return null; // Valid password
+}
+
 
 // Email and Password Login
 const submit = document.getElementById('submit');
@@ -17,6 +42,13 @@ submit.addEventListener("click", async function (event) {
 
     const email = document.getElementById('email').value;
     const password = document.getElementById('password').value;
+
+    // Step 1: Validate password strength
+    const passwordValidationMessage = validatePassword(password);
+    if (passwordValidationMessage) {
+        showSnackbar(passwordValidationMessage); // Show validation error if password is weak
+        return; // Stop further execution
+    }
 
     try {
         const userCredential = await signInWithEmailAndPassword(auth, email, password);
@@ -40,8 +72,12 @@ submit.addEventListener("click", async function (event) {
             }
         }
     } catch (error) {
+
         console.error("Error logging in:", error.code, error.message);
-        alert(error.message);
+        const userMessage = getErrorMessage(error.code);
+        setTimeout(() => {
+            showSnackbar(userMessage);
+        }, 2000);
     }
 });
 
@@ -78,21 +114,25 @@ googleLogin.addEventListener("click", async function () {
 });
 
 // when user forgets password and wants to reset
-const reset = document.getElementById('reset')
+const reset = document.getElementById('reset');
 reset.addEventListener("click", function (event) {
-    event.preventDefault()
-    const email = document.getElementById('email').value
+    event.preventDefault();
+    const email = document.getElementById('email').value;
+
+    // Check if email is provided
+    if (!email) {
+        showSnackbar("Please enter your email in the Username field and click the 'Forgot Password' link again.");
+        return; // Stop further execution if email is not provided
+    }
 
     sendPasswordResetEmail(auth, email)
         .then(() => {
             // Password reset email sent!
-            // ..
-            alert("Email sent")
+            showSnackbar("Password reset email sent. Please check your inbox.");
         })
         .catch((error) => {
             const errorCode = error.code;
             const errorMessage = error.message;
-            alert(errorMessage)
-            // ..
+            showSnackbar(errorMessage);
         });
-})
+});

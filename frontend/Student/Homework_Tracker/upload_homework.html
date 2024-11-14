@@ -8,9 +8,10 @@
         integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH" crossorigin="anonymous">
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3/dist/js/bootstrap.bundle.min.js"></script>
     <script src="https://unpkg.com/vue@3/dist/vue.global.js"></script>
-    <title>Edufly - Upload Homework</title>
+    <title>EduFly - Upload Homework</title>
 
     <link rel="stylesheet" href="../../css/student_navbar.css">
+    <script type="module" src="../../js/update.js"></script>
     <style>
         body {
             background-color: #f8f9fa;
@@ -63,28 +64,29 @@
         <div class="collapse navbar-collapse" id="navbarNav">
             <ul class="navbar-nav ml-auto">
                 <li class="nav-item"><a class="nav-link" href="../Homework_Tracker/Assignment_List.html">&#9997;&#65039;
-                        Homework</a></li>
-                <li class="nav-item"><a class="nav-link" href="../Timetable/timetable.html">&#128467;&#65039;
-                        Timetable</a></li>
-                <li class="nav-item"><a class="nav-link" href="../Summary/SummaryPage.html">&#127891; Progress
-                        Tracker</a></li>
-                <li class="nav-item"><a class="nav-link" href="../Announcement/Announcement_Page.html">&#128226;
-                        Announcement</a></li>
-                <li class="nav-item"><a class="nav-link" href="../Medical/upload_medical.html">&#128221; Form
-                        Submission</a></li>
-                <li class="nav-item"><a class="nav-link" href="../Pomodoro_Timer/pomodoro.html">&#128338; Pomodoro
-                        Timer</a></li>
-                <li class="nav-item"><a class="nav-link" href="../Consultation/student_consultation.html">&#128172; Book
-                        Consults</a></li>
-                <li class="nav-item">
-                    <a class="nav-link" id="profileLink" href="../Homepage/profile.html">&#128100; Profile</a>
-                    <!-- Target for dynamic name -->
-                </li>
+                    Homework</a></li>
+            <li class="nav-item"><a class="nav-link" href="../Timetable/timetable.html">&#128467;&#65039;
+                    Timetable</a></li>
+            <li class="nav-item"><a class="nav-link" href="../Summary/SummaryPage.html">&#127891;
+                    Progress</a></li>
+            <li class="nav-item"><a class="nav-link" href="../Announcement/Announcement_Page.html">&#128226;
+                    Announcements</a></li>
+            <li class="nav-item"><a class="nav-link" href="../Medical/upload_medical.html">&#x1f48a; Submit
+                    MC</a></li>
+            <li class="nav-item"><a class="nav-link" href="../Pomodoro_Timer/pomodoro.html">&#128338; Pomodoro
+                    Timer</a></li>
+            <li class="nav-item"><a class="nav-link" href="../Consultation/student_consultation.html">&#128172;
+                    Consultations</a></li>
+            <li class="nav-item">
+                <a class="nav-link" id="profileLink" href="../Homepage/profile.html">&#128100; Profile</a>
+            </li>
             </ul>
             <ul class="navbar-nav ms-auto">
-                <button id="logout-btn" class="btn btn-primary">&#128682; Log Out</button>
-                <!-- Snackbar Notification -->
-                <div id="snackbar" class="snackbar">Logged out successfully!</div>
+                <li class="nav-item">
+                    <button id="logout-btn" class="btn btn-primary">&#128682; Log Out</button>
+                    <!-- Snackbar Notification -->
+                    <div id="snackbar" class="snackbar">Logged out successfully!</div>
+                </li>
             </ul>
         </div>
     </nav>
@@ -135,9 +137,9 @@
             </div>
         </div>
     </div>
-    
-     <!-- Footer -->
-     <footer class="container-fluid text-white pt-4 mt-auto text-center" style="background-color: #343a40">
+
+    <!-- Footer -->
+    <footer class="container-fluid text-white pt-4 mt-auto text-center" style="background-color: #343a40">
         <div class="row">
             <p>&copy; 2024 EduFly. All Rights Reserved.</p>
         </div>

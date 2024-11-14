@@ -88,13 +88,13 @@
 
         <!-- Check Attendance and Check Assignment Grades Buttons -->
         <div v-if="!loading && selectedClass" class="mb-3">
-            <button @click="goToAttendanceTracker" class="btn btn-primary">
+            <button @click="goToAttendanceTracker" class="btn btn-primary me-2 mb-2">
                 Check Attendance
             </button>
-            <button @click="goToGradesTracker" class="btn btn-secondary ms-2">
+            <button @click="goToGradesTracker" class="btn btn-secondary me-2 mb-2">
                 Check Assignment Grades
             </button>
-            <button @click="generatePDF" class="btn btn-success ms-2">
+            <button @click="generatePDF" class="btn btn-success me-2 mb-2">
                 Download Student List
             </button>
         </div>

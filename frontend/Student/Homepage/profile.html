@@ -11,7 +11,7 @@
     <!-- Vue 3 -->
     <script src="https://unpkg.com/vue@3/dist/vue.global.js"></script>
     <script type="module" src="../../js/update.js"></script>
-    <title>Edufly - Profile</title>
+    <title>EduFly - Profile</title>
     <link rel="stylesheet" href="../../css/student_navbar.css">
 </head>
 
@@ -31,23 +31,22 @@
         <div class="collapse navbar-collapse" id="navbarNav">
             <ul class="navbar-nav ml-auto">
                 <li class="nav-item"><a class="nav-link" href="../Homework_Tracker/Assignment_List.html">&#9997;&#65039;
-                        Homework</a></li>
-                <li class="nav-item"><a class="nav-link" href="../Timetable/timetable.html">&#128467;&#65039;
-                        Timetable</a></li>
-                <li class="nav-item"><a class="nav-link" href="../Summary/SummaryPage.html">&#127891; Progress
-                        Tracker</a></li>
-                <li class="nav-item"><a class="nav-link" href="../Announcement/Announcement_Page.html">&#128226;
-                        Announcement</a></li>
-                <li class="nav-item"><a class="nav-link" href="../Medical/upload_medical.html">&#128221; Form
-                        Submission</a></li>
-                <li class="nav-item"><a class="nav-link" href="../Pomodoro_Timer/pomodoro.html">&#128338; Pomodoro
-                        Timer</a></li>
-                <li class="nav-item"><a class="nav-link" href="../Consultation/student_consultation.html">&#128172; Book
-                        Consults</a></li>
-                <li class="nav-item">
-                    <a class="nav-link" id="profileLink" href="../Homepage/profile.html">&#128100; Profile</a>
-                    <!-- Target for dynamic name -->
-                </li>
+                    Homework</a></li>
+            <li class="nav-item"><a class="nav-link" href="../Timetable/timetable.html">&#128467;&#65039;
+                    Timetable</a></li>
+            <li class="nav-item"><a class="nav-link" href="../Summary/SummaryPage.html">&#127891;
+                    Progress</a></li>
+            <li class="nav-item"><a class="nav-link" href="../Announcement/Announcement_Page.html">&#128226;
+                    Announcements</a></li>
+            <li class="nav-item"><a class="nav-link" href="../Medical/upload_medical.html">&#x1f48a; Submit
+                    MC</a></li>
+            <li class="nav-item"><a class="nav-link" href="../Pomodoro_Timer/pomodoro.html">&#128338; Pomodoro
+                    Timer</a></li>
+            <li class="nav-item"><a class="nav-link" href="../Consultation/student_consultation.html">&#128172;
+                    Consultations</a></li>
+            <li class="nav-item">
+                <a class="nav-link" id="profileLink" href="../Homepage/profile.html">&#128100; Profile</a>
+            </li>
             </ul>
             <ul class="navbar-nav ms-auto">
                 <button id="logout-btn" class="btn btn-primary">&#128682; Log Out</button>
@@ -59,7 +58,7 @@
 
     <!-- Main Container -->
     <div id="app" class="container mt-4">
-        <h2>Edit Profile</h2>
+        <h2>Profile</h2>
         <form @submit.prevent="updateProfile">
             <div class="mb-3">
                 <label for="email" class="form-label">Email</label>
@@ -67,23 +66,22 @@
             </div>
             <div class="mb-3">
                 <label for="fname" class="form-label">First Name</label>
-                <input type="text" id="fname" class="form-control" v-model="profile.FName">
+                <input type="text" id="fname" class="form-control" v-model="profile.FName" readonly>
             </div>
             <div class="mb-3">
                 <label for="lname" class="form-label">Last Name</label>
-                <input type="text" id="lname" class="form-control" v-model="profile.LName">
+                <input type="text" id="lname" class="form-control" v-model="profile.LName" readonly>
             </div>
             <div class="mb-3">
                 <label for="studentId" class="form-label">Student ID</label>
-                <input type="text" id="studentId" class="form-control" v-model="profile.StudentID">
+                <input type="text" id="studentId" class="form-control" v-model="profile.StudentID" readonly>
             </div>
             <div class="mb-3">
                 <label for="class" class="form-label">Class</label>
-                <input type="text" id="class" class="form-control" v-model="profile.Class">
+                <input type="text" id="class" class="form-control" v-model="profile.Class" readonly>
             </div>
-            <button type="submit" class="btn btn-primary">Update Profile</button>
         </form>
-        <!-- Snackbar Notification -->
+        Snackbar Notification
         <div v-if="showSnackbar" class="notification"
             style="opacity: 1; background-color: black; color: white; min-width: 250px; margin-left: -125px; text-align: center; border-radius: 4px; padding: 16px; position:fixed; left: 50%; bottom: 30px; font-size: 17px; z-index:9999; transition: visibility 0s, opacity 0.5s linear ">
             {{ snackbarMessage }}

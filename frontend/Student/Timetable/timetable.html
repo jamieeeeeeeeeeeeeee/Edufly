@@ -10,7 +10,7 @@
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3/dist/js/bootstrap.bundle.min.js"></script>
     <!-- Vue 3 -->
     <script src="https://unpkg.com/vue@3/dist/vue.global.js"></script>
-    <title>Edufly - Calendar</title>
+    <title>EduFly - Timetable</title>
 
     <link rel="stylesheet" href="../../css/student_navbar.css">
     <script type="module" src="../../js/update.js"></script>
@@ -246,6 +246,12 @@
     <script src="https://apis.google.com/js/api.js"></script>
     <link href="https://cdn.jsdelivr.net/npm/fullcalendar@5.10.1/main.min.css" rel="stylesheet" />
     <script src="https://cdn.jsdelivr.net/npm/fullcalendar@5.10.1/main.min.js"></script>
+
+    <script>function setMinDate() { // Makes sure that users can't create/edit calendar events in the past
+    const today = new Date().toISOString().slice(0, 16); // Current date in YYYY-MM-DDTHH:MM format
+    document.getElementById("event-start").setAttribute("min", today);
+    document.getElementById("event-end").setAttribute("min", today);
+}</script>
 </head>
 
 <body class="full-height bg-light">
@@ -264,23 +270,22 @@
         <div class="collapse navbar-collapse" id="navbarNav">
             <ul class="navbar-nav ml-auto">
                 <li class="nav-item"><a class="nav-link" href="../Homework_Tracker/Assignment_List.html">&#9997;&#65039;
-                        Homework</a></li>
-                <li class="nav-item"><a class="nav-link" href="../Timetable/timetable.html">&#128467;&#65039;
-                        Timetable</a></li>
-                <li class="nav-item"><a class="nav-link" href="../Summary/SummaryPage.html">&#127891; Progress
-                        Tracker</a></li>
-                <li class="nav-item"><a class="nav-link" href="../Announcement/Announcement_Page.html">&#128226;
-                        Announcement</a></li>
-                <li class="nav-item"><a class="nav-link" href="../Medical/upload_medical.html">&#128221; Form
-                        Submission</a></li>
-                <li class="nav-item"><a class="nav-link" href="../Pomodoro_Timer/pomodoro.html">&#128338; Pomodoro
-                        Timer</a></li>
-                <li class="nav-item"><a class="nav-link" href="../Consultation/student_consultation.html">&#128172; Book
-                        Consults</a></li>
-                <li class="nav-item">
-                    <a class="nav-link" id="profileLink" href="../Homepage/profile.html">&#128100; Profile</a>
-                    <!-- Target for dynamic name -->
-                </li>
+                    Homework</a></li>
+            <li class="nav-item"><a class="nav-link" href="../Timetable/timetable.html">&#128467;&#65039;
+                    Timetable</a></li>
+            <li class="nav-item"><a class="nav-link" href="../Summary/SummaryPage.html">&#127891;
+                    Progress</a></li>
+            <li class="nav-item"><a class="nav-link" href="../Announcement/Announcement_Page.html">&#128226;
+                    Announcements</a></li>
+            <li class="nav-item"><a class="nav-link" href="../Medical/upload_medical.html">&#x1f48a; Submit
+                    MC</a></li>
+            <li class="nav-item"><a class="nav-link" href="../Pomodoro_Timer/pomodoro.html">&#128338; Pomodoro
+                    Timer</a></li>
+            <li class="nav-item"><a class="nav-link" href="../Consultation/student_consultation.html">&#128172;
+                    Consultations</a></li>
+            <li class="nav-item">
+                <a class="nav-link" id="profileLink" href="../Homepage/profile.html">&#128100; Profile</a>
+            </li>
             </ul>
             <ul class="navbar-nav ms-auto">
                 <button id="logout-btn" class="btn btn-primary">&#128682; Log Out</button>
@@ -290,30 +295,25 @@
         </div>
     </nav>
     <div class="container mb-5">
-        <h1>Google Calendar Events</h1>
-
-        <div id="signin-button" style="display: block;">Sign in With Google</div>
-        <button id="signout-button" style="display:none;" onclick="handleSignOut()">Sign out</button>
 
         <div id="calendar-events"></div>
 
-        Event creation/edit form
+        <div id="signin-button" style="display: block;">Sign in With Google</div>
+        <button id="signout-button" style="display:none; background-color:white" onclick="handleSignOut()" disabled
+            aria-disabled="true">Exit Calendar</button>
+
         <div id="event-form" class="form-container" style="display: none;">
-            <h3>Create or Edit Event</h3>
+            <h3>Event Details</h3>
             <form id="event-form-content">
                 <input type="hidden" id="event-id" />
                 <label for="event-title">Event Title:</label>
-                <input type="text" id="event-title" required><br><br>
+                <input type="text" id="event-title" disabled><br><br>
 
                 <label for="event-start">Start Time:</label>
-                <input type="datetime-local" id="event-start" required><br><br>
+                <input type="datetime-local" id="event-start" disabled><br><br>
 
                 <label for="event-end">End Time:</label>
-                <input type="datetime-local" id="event-end" required><br><br>
-
-                <button type="submit">Save Event</button>
-                <button type="button" id="delete-event-button" onclick="deleteEvent()">Delete Event</button>
-                <button id="signout-button" style="display:none;">Sign out</button>
+                <input type="datetime-local" id="event-end" disabled><br><br>
             </form>
         </div>
     </div>
@@ -439,12 +439,23 @@
         }
 
         function openEventForm(event) {
-            document.getElementById("event-id").value = event.id;
-            document.getElementById("event-title").value = event.title;
-            document.getElementById("event-start").value = event.start.toISOString().slice(0, 16);
-            document.getElementById("event-end").value = event.end.toISOString().slice(0, 16);
-            document.getElementById("delete-event-button").style.display = "inline-block";
-        }
+    document.getElementById("event-id").value = event.id;
+    document.getElementById("event-title").value = event.title;
+
+    // Convert to local time using toLocaleString and get ISO format for datetime-local input
+    const startTime = new Date(event.start);
+    const endTime = new Date(event.end);
+
+    // Get local time as string in YYYY-MM-DDTHH:MM format for datetime-local input
+    const startTimeLocal = startTime.toLocaleString('sv-SE', { timeZone: Intl.DateTimeFormat().resolvedOptions().timeZone });
+    const endTimeLocal = endTime.toLocaleString('sv-SE', { timeZone: Intl.DateTimeFormat().resolvedOptions().timeZone });
+
+    // Set values for the datetime-local fields
+    document.getElementById("event-start").value = startTimeLocal.replace(" ", "T");
+    document.getElementById("event-end").value = endTimeLocal.replace(" ", "T");
+
+    document.getElementById("delete-event-button").style.display = "inline-block";
+}
 
         document.getElementById('event-form-content').addEventListener('submit', async (e) => {
             e.preventDefault();

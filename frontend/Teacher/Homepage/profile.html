@@ -11,7 +11,7 @@
     <!-- Vue 3 -->
     <script src="https://unpkg.com/vue@3/dist/vue.global.js"></script>
     <script type="module" src="../../js/update.js"></script>
-    <title>Edufly - Profile</title>
+    <title>EduFly - Profile</title>
     <link rel="stylesheet" href="../../css/teacher_navbar.css">
 
 </head>
@@ -54,7 +54,7 @@
     </nav>
     <!-- Main Container -->
     <div id="app" class="container mt-4">
-        <h2>Edit Profile</h2>
+        <h2> Profile</h2>
         <form @submit.prevent="updateProfile">
             <div class="mb-3">
                 <label for="email" class="form-label">Email</label>
@@ -62,21 +62,21 @@
             </div>
             <div class="mb-3">
                 <label for="fname" class="form-label">First Name</label>
-                <input type="text" id="fname" class="form-control" v-model="profile.FName">
+                <input type="text" id="fname" class="form-control" v-model="profile.FName" readonly>
             </div>
             <div class="mb-3">
                 <label for="lname" class="form-label">Last Name</label>
-                <input type="text" id="lname" class="form-control" v-model="profile.LName">
+                <input type="text" id="lname" class="form-control" v-model="profile.LName" readonly>
             </div>
             <div class="mb-3">
                 <label for="cnic" class="form-label">CNIC</label>
-                <input type="text" id="cnic" class="form-control" v-model="profile.CNIC">
+                <input type="text" id="cnic" class="form-control" v-model="profile.CNIC" readonly>
             </div>
             <div class="mb-3">
                 <label for="classes" class="form-label">Classes</label>
-                <input type="text" id="classes" class="form-control" v-model="classesString">
+                <input type="text" id="classes" class="form-control" v-model="classesString" readonly>
             </div>
-            <button type="submit" class="btn btn-primary">Update Profile</button>
+            <!-- <button type="submit" class="btn btn-primary">Update Profile</button> -->
         </form>
         <!-- Snackbar Notification -->
         <div v-if="showSnackbar" class="notification"
