@@ -10,6 +10,7 @@ module.exports = function (homeworkConnection) {
     const homeworkSchema = new mongoose.Schema({
         studentId: { type: String, required: true },
         sectionId: { type: String, required: true },
+        title: { type: String, required: true },
         homeworkFile: { type: Buffer, required: true },
         fileName: { type: String, required: true },
         uploadedAt: { type: Date, default: Date.now }
@@ -29,6 +30,7 @@ module.exports = function (homeworkConnection) {
             const newHomework = new Homework({
                 studentId: req.body.studentId,
                 sectionId: req.body.sectionId,
+                title: req.body.title,
                 homeworkFile: req.file.buffer,
                 fileName: req.file.originalname,
             });
@@ -36,7 +38,7 @@ module.exports = function (homeworkConnection) {
             res.status(200).json({ message: 'Homework uploaded successfully' });
 
         } catch (error) {
-            res.status(500).json({ message: 'Error uploading homework test', error });
+            res.status(500).json({ message: 'Status 500: Error uploading homework', error });
         }
     });
 

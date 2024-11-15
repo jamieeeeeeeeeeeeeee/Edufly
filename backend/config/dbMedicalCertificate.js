@@ -20,3 +20,4 @@ const connectMedicalCertificateDB = () => {
 };
 
 module.exports = connectMedicalCertificateDB;
+

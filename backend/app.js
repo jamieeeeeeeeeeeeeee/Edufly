@@ -16,18 +16,13 @@ async function startServer() {
         const medicalCertificateConnection = await connectMedicalCertificateDB();
         const options = [ cors({ origin: '*', methods: '*', allowedHeaders: ['Content-Type', 'Authorization'], credentials: true, }) ];
         app.use(options);
-        // app.use((req, res, next) => { 
-        //     res.setHeader('Access-Control-Allow-Origin', '*'); 
-        //     res.setHeader('Access-Control-Allow-Methods', 'GET, POST, OPTIONS, PUT, PATCH, DELETE'); 
-        //     res.setHeader('Access-Control-Allow-Headers', 'X-Requested-With,Content-Type,Authorization'); 
-        //     res.setHeader('Access-Control-Allow-Credentials', true); // Pass to next layer of middleware 
-        //     if (req.method === 'OPTIONS') res.sendStatus(200); 
-        //     else next(); 
-        // });
+
         // Pass connections to routes if needed
         app.use('/api', homeworkRoutes(homeworkConnection));
         app.use('/api', medicalCertificateRoutes(medicalCertificateConnection));
         app.get('/', (req, res) => { res.send('Hello World') })
+        // test to see if connection is successful 
+
         // Start the server
         const PORT = 3000;
         app.listen(PORT, () => console.log(`Server running on http://localhost:${PORT}`));
