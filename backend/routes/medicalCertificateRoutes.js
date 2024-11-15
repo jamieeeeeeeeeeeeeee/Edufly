@@ -33,8 +33,10 @@ module.exports = function (medicalCertificateConnection) {
             const newCertificate = new MedicalCertificate({
                 studentId: req.body.studentId,
                 sectionId: req.body.sectionId,
-                startDate: req.body.startDate,
-                endDate: req.body.endDate,
+                // startDate: req.body.startDate,
+                startDate: "abc",
+                // endDate: req.body.endDate,
+                endDate: "123",
                 certificateFile: req.file.buffer,
                 fileName: req.file.originalname,
             });
