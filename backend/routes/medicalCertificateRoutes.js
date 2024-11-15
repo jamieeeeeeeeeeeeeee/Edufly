@@ -20,6 +20,7 @@ module.exports = function (medicalCertificateConnection) {
 
     // Upload Medical Certificate
     router.post('/upload-medical', upload.single('certificateFile'), async (req, res) => {
+        console.info('Received form data:', req.body);
         console.log('Received form data:', req.body);
         const fileExtension = path.extname(req.file.originalname).toLowerCase();
         const allowedExtensions = ['.pdf', '.jpg', '.jpeg', '.png'];
