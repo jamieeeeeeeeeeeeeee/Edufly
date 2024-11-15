@@ -35,15 +35,15 @@ const vueApp = Vue.createApp({
     },
     computed: {
         dateError() {
-                if (this.startDate && this.endDate) {
-                    if (this.startDate > this.endDate) {
-                        return 'Start date cannot be later than end date.';
-                    } else if (this.endDate < this.startDate) {
-                        return 'End date cannot be earlier than start date.';
-                    }
+            if (this.startDate && this.endDate) {
+                if (this.startDate > this.endDate) {
+                    return 'Start date cannot be later than end date.';
+                } else if (this.endDate < this.startDate) {
+                    return 'End date cannot be earlier than start date.';
                 }
-                return null;
-            },
+            }
+            return null;
+        },
     },
     methods: {
         handleFileUpload(event) {
