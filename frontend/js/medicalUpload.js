@@ -71,7 +71,6 @@ const vueApp = Vue.createApp({
 
                 if (response.ok) {
                     this.message = '<div class="alert alert-success">Medical certificate uploaded successfully</div>';
-                    console.log(this.startDate, this.endDate);
                     this.startDate = null;
                     this.endDate = null;
                     this.certificateFile = null; // Clear file data
