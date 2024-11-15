@@ -395,7 +395,7 @@
         import { auth, db, onAuthStateChanged, getFirestore, doc, getDoc, collection, getDocs, setDoc, addDoc, deleteDoc, Timestamp } from '../../js/database.js';
 
         const CLIENT_ID = '253069344619-3irs1nn3r35c9cfrt1qepmhqqt2gclqc.apps.googleusercontent.com';
-        const API_KEY = 'AIzaSyBG28vCzNwcnGuzntrefL_Qxe2CGGBe0lc';
+        const API_KEY ="";
         const SCOPES = 'https://www.googleapis.com/auth/calendar';
 
         let tokenClient;
@@ -464,22 +464,12 @@
         }
 
         function handleAuthSuccess(tokenResponse) {
-
-            if (tokenResponse.error) {
-                console.error("Error during authentication:", tokenResponse.error);
-                showSnackbar("Authentication failed. Please try again.");
-                return;
-            }
-            console.log("Authentication successful.");
-            localStorage.setItem("googleAccessToken", tokenResponse.access_token);
-            gapi.client.setToken({ access_token: tokenResponse.access_token });
-            loadCalendarEvents();
             console.log("Authentication successful.");
             localStorage.setItem("googleAccessToken", tokenResponse.access_token);
             document.getElementById("signin-button").style.display = "none";
             document.getElementById("signout-button").style.display = "block";
             document.getElementById("event-form").style.display = "block"; // Show form
-            // loadCalendarEvents();
+            loadCalendarEvents();
         }
 
         function handleSignOut() {
