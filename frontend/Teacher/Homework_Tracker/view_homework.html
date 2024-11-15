@@ -69,7 +69,7 @@
             <!-- Only show the homework list if there are any items -->
             <div v-if="!loading" class="list-group shadow-sm">
                 <a v-for="homework in homeworkList" :key="homework._id"
-                    :href="`https://test-mongo-hoz8a2iyq-jamies-projects-ac80ffa6.vercel.app/api/homeworks/${homework._id}`" target="_blank"
+                    :href="`https://test-mongo-db-ashen.vercel.app/api/homeworks/${homework._id}`" target="_blank"
                     class="list-group-item list-group-item-action">
                     <strong>{{ homework.fileName }}</strong> <br>
                     <small>Uploaded by: {{ homework.studentId }} from {{ homework.sectionId }} on {{ new

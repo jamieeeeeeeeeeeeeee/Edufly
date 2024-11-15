@@ -115,34 +115,37 @@
         </div>
 
         <!-- Display Consultation Requests -->
-        <hr v-if="!loading && selectedClass && consultations.length > 0">
-        <h3 v-if="!loading && consultations.length > 0">Pending Consultation Requests</h3>
-        <table v-if="!loading && consultations.length > 0" class="table table-striped table-responsive">
-            <thead>
-                <tr>
-                    <th>Student Name</th>
-                    <th>Student ID</th>
-                    <th>Subject</th>
-                    <th>Description</th>
-                    <th>Preferred Time</th>
-                    <th style="text-align: center;">Actions</th>
-                </tr>
-            </thead>
-            <tbody>
-                <tr v-for="consultation in consultations" :key="consultation.id">
-                    <td>{{ consultation.studentName }}</td>
-                    <td>{{ consultation.studentID }}</td>
-                    <td>{{ consultation.subject }}</td>
-                    <td>{{ consultation.reason }}</td>
-                    <td>{{ consultation.preferredTime }}</td>
-                    <td style="text-align: center">
-                        <button class="btn btn-success me-2"
-                            @click="approveConsultation(consultation.id)">Approve</button>
-                        <button class="btn btn-danger" @click="rejectConsultation(consultation.id)">Reject</button>
-                    </td>
-                </tr>
-            </tbody>
-        </table>
+        <div class = "table-responsive">
+            <hr v-if="!loading && selectedClass && consultations.length > 0">
+            <h3 v-if="!loading && consultations.length > 0">Pending Consultation Requests</h3>
+            <table v-if="!loading && consultations.length > 0" class="table table-striped">
+                <thead>
+                    <tr>
+                        <th>Student Name</th>
+                        <th>Student ID</th>
+                        <th>Subject</th>
+                        <th>Description</th>
+                        <th>Preferred Time</th>
+                        <th style="text-align: center;">Actions</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr v-for="consultation in consultations" :key="consultation.id">
+                        <td>{{ consultation.studentName }}</td>
+                        <td>{{ consultation.studentID }}</td>
+                        <td>{{ consultation.subject }}</td>
+                        <td>{{ consultation.reason }}</td>
+                        <td>{{ consultation.preferredTime }}</td>
+                        <td style="text-align: center">
+                            <button class="btn btn-success me-2"
+                                @click="approveConsultation(consultation.id)">Approve</button>
+                            <button class="btn btn-danger" @click="rejectConsultation(consultation.id)">Reject</button>
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+        
 
         <!-- Snackbar Notification -->
         <div v-if="snackbarMessage" class="snackbar show">{{ snackbarMessage }}</div>

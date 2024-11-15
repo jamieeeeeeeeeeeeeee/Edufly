@@ -78,6 +78,11 @@
             </div>
             <!-- <button type="submit" class="btn btn-primary">Update Profile</button> -->
         </form>
+        <!-- Snackbar Notification -->
+        <div v-if="showSnackbar" class="notification"
+            style="opacity: 1; background-color: black; color: white; min-width: 250px; margin-left: -125px; text-align: center; border-radius: 4px; padding: 16px; position:fixed; left: 50%; bottom: 30px; font-size: 17px; z-index:9999; transition: visibility 0s, opacity 0.5s linear ">
+            {{ snackbarMessage }}
+        </div>
     </div>
 
     <script type="module">
@@ -93,6 +98,8 @@
                         CNIC: "",
                         Classes: []
                     },
+                    showSnackbar: false,
+                    snackbarMessage: ""
                 };
             },
             computed: {
@@ -128,6 +135,37 @@
                         }
                     });
                 },
+                async updateProfile() {
+                    try {
+                        const docRef = doc(db, "Teachers", this.profile.email);
+                        await setDoc(docRef, {
+                            FName: this.profile.FName,
+                            LName: this.profile.LName,
+                            CNIC: this.profile.CNIC,
+                            Classes: this.profile.Classes // Save as array directly
+                        }, { merge: true });
+
+                        this.showSnackbarMessage("Profile updated successfully!");
+                    } catch (error) {
+                        console.error("Error updating document: ", error);
+                        this.showSnackbarMessage("Failed to update profile!");
+                    }
+                },
+
+                showSnackbarMessage(message) {
+                    // Set the message and show the notification
+                    this.snackbarMessage = message;
+                    this.showSnackbar = true;
+                    console.log("Snackbar visible:", this.showSnackbar);  // Check if it's set to true
+
+                    // Hide after 3 seconds
+                    setTimeout(() => {
+                        this.showSnackbar = false;
+                        console.log("Snackbar hidden:", this.showSnackbar);  // Check if it's set to false
+                    }, 3000);
+                }
+
+
             }
         });
 

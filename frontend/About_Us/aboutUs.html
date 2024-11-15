@@ -14,20 +14,31 @@
 
     <title>EduFly</title>
     <style>
-         .navbar {
+        .navbar {
             background-color: green;
+        }
+
+        html,
+        body {
+            height: 100%;
+        }
+
+        .full-height {
+            display: flex;
+            flex-direction: column;
         }
     </style>
 
 </head>
 
-<body>
-    <nav class="navbar navbar-expand-lg navbar-dark">
+<body class="full-height bg-light">
+        <nav class="navbar navbar-expand-lg navbar-dark">
         <a class="navbar-brand" href="../index.html">
             <img src="../img/icon.png" alt="Logo" class="d-inline-block align-top" style="height: 30px; width: auto;">
             EduFly
         </a>
-        <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+        <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNav"
+            aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
             <span class="navbar-toggler-icon"></span>
         </button>
         <div class="collapse navbar-collapse" id="navbarNav">
@@ -41,21 +52,23 @@
     <main>
         <section class="intro">
             <h2>Who We Are</h2>
-            <p>We are a small but dedicated team of web developers from G10 trying our best to apply concepts learnt in WADII to
+            <p>We are a small but dedicated team of web developers from G10 trying our best to apply concepts learnt in
+                WADII to
                 achieve excellence in our project.</p>
         </section>
 
         <section class="mission">
             <h2>Our Mission</h2>
             <p>
-                Our mission is to develop a cloud-hosted, useful, and responsive web application that supports educators in their daily tasks, 
+                Our mission is to develop a cloud-hosted, useful, and responsive web application that supports educators
+                in their daily tasks,
                 reducing their administrative burden and letting them focus on what they do best - teaching.</p>
         </section>
 
         <section class="values">
             <h2>Our Values</h2>
             <ul>
-                <li>Discipline</li>
+                <li>Diligence</li>
                 <li>Professionalism</li>
                 <li> Customer-Centeredness</li>
                 <li>Teamwork</li>
@@ -67,92 +80,95 @@
             <h2>Meet Our Team</h2>
 
             <div class="row row-cols-1 row-cols-md-2 row-cols-lg-4 g-4">
-            <!-- BS card: Start -->
-            <div class="col">
-                <div class="card h-100">
-                <img src="../img/Leandro.png" class="card-img-top" alt="Leandro">
-                <div class="card-body">
-                    <h5 class="card-title">Backend Legend</h5>
-                    <p class="card-text">Learn MongoDB for a module that focuses on front-end web development
-                    </p>
-                </div>
-                <ul class="list-group list-group-flush">
-                    <li class="list-group-item">Is in Aquathlon -- and takes his trainings very seriously</li>
-                    <li class="list-group-item">Westie</li>
-                    <li class="list-group-item">Hit him up for SMU Booking</li>
-                </ul>
-                <div class="card-body">
-                    Telegram: <a href="https://telegram.me/leandrokueh" class="card-link">@leandrokeuh</a>
-                </div>
-                </div>
-                <!-- BS card: End -->
-            </div>
-
-            <div class="col">
                 <!-- BS card: Start -->
-                <div class="card h-100">
-                <img src="../img/RyanB.png" class="card-img-top" alt="Ryan B">
-                <div class="card-body">
-                    <h5 class="card-title">Goated UX Designer</h5>
-                    <p class="card-text">Never fails to come up with the most amazing designs ever</p>
+                <div class="col">
+                    <div class="card h-100">
+                        <img src="../img/Leandro.png" class="card-img-top" alt="Leandro">
+                        <div class="card-body">
+                            <h5 class="card-title">Leandro Gay</h5>
+                            <p class="card-text">MongoDB back-end expert
+                            </p>
+                        </div>
+                        <ul class="list-group list-group-flush">
+                            <li class="list-group-item">Is in Aquathlon -- and takes his trainings very seriously</li>
+                            <li class="list-group-item">Westie</li>
+                            <li class="list-group-item">Hit him up for SMU Facility Booking</li>
+                        </ul>
+                        <div class="card-body">
+                            Telegram: <a href="https://telegram.me/leandrokueh" class="card-link">@leandrokeuh</a>
+                        </div>
+                    </div>
+                    <!-- BS card: End -->
                 </div>
-                <ul class="list-group list-group-flush">
-                    <li class="list-group-item">Changed life ambition from Arts @ SOTA to Computing @ SMU</li>
-                    <li class="list-group-item">Even more Westie</li>
-                    <li class="list-group-item">Lost a medal in NS because he did not show up on event day</li>
-                </ul>
-                <div class="card-body">
-                    Telegram: <a href="https://telegram.me/ryanbangras" class="card-link">@RyanBangras</a>
-                </div>
-                </div>
-                <!-- BS card: End -->
-            </div>
 
-            <div class="col">
+                <div class="col">
+                    <!-- BS card: Start -->
+                    <div class="card h-100">
+                        <img src="../img/RyanB.png" class="card-img-top" alt="Ryan B">
+                        <div class="card-body">
+                            <h5 class="card-title">Ryan Bangras</h5>
+                            <p class="card-text">Front-end and calendar fan</p>
+                        </div>
+                        <ul class="list-group list-group-flush">
+                            <li class="list-group-item">Changed life ambition from Arts @ SOTA to Computing @ SMU</li>
+                            <li class="list-group-item">Even more Westie</li>
+                            <li class="list-group-item">Apple fanboy offering free tech support</li>
+                        </ul>
+                        <div class="card-body">
+                            Telegram: <a href="https://telegram.me/ryanbangras" class="card-link">@RyanBangras</a>
+                        </div>
+                    </div>
+                    <!-- BS card: End -->
+                </div>
 
-                <!-- BS card: Start -->
-                <div class="card h-100">
-                <img src="../img/RyanN.png" class="card-img-top" alt="Ryan N">
-                <div class="card-body">
-                    <h5 class="card-title">Firebase expert</h5>
-                    <p class="card-text">First to figure out how Firebase works</p>
-                </div>
-                <ul class="list-group list-group-flush">
-                    <li class="list-group-item">Takes 2 Friday IS mods </li>
-                    <li class="list-group-item">Another Westie</li>
-                    <li class="list-group-item">Aesthetic lifestyle and underrated video editor</li>
-                </ul>
-                <div class="card-body">
-                    Telegram: <a href="https://telegram.me/b4ch0rmee" class="card-link">@b4ch0rmee</a>
-                </div>
-                </div>
-                <!-- BS card: End -->
-            </div>
+                <div class="col">
 
-            <div class="col">
-                <!-- BS card: Start -->
-                <div class="card h-100">
-                <img src="../img/Jamie.png" class="card-img-top" alt="Jamie">
-                <div class="card-body">
-                    <h5 class="card-title">Javascript troller</h5>
-                    <p class="card-text">Only know how to use ChatGPT to debug her JS codes</p>
+                    <!-- BS card: Start -->
+                    <div class="card h-100">
+                        <img src="../img/RyanN.png" class="card-img-top" alt="Ryan N">
+                        <div class="card-body">
+                            <h5 class="card-title">Ryan Ng</h5>
+                            <p class="card-text">Resident Firebase pro</p>
+                        </div>
+                        <ul class="list-group list-group-flush">
+                            <li class="list-group-item">Takes 2 Friday IS mods </li>
+                            <li class="list-group-item">Another Westie</li>
+                            <li class="list-group-item">Aesthetic lifestyle and underrated video editor</li>
+                        </ul>
+                        <div class="card-body">
+                            Telegram: <a href="https://telegram.me/b4ch0rmee" class="card-link">@b4ch0rmee</a>
+                        </div>
+                    </div>
+                    <!-- BS card: End -->
                 </div>
-                <ul class="list-group list-group-flush">
-                    <li class="list-group-item">Always kena morning IS PASG mods</li>
-                    <li class="list-group-item">Central Westie</li>
-                    <li class="list-group-item">Eyebags until look like Panda</li>
-                </ul>
-                <div class="card-body">
-                    Telegram: <a href="https://telegram.me/jamietann" class="card-link">@jamietann</a>
+
+                <div class="col">
+                    <!-- BS card: Start -->
+                    <div class="card h-100">
+                        <img src="../img/Jamie.png" class="card-img-top" alt="Jamie">
+                        <div class="card-body">
+                            <h5 class="card-title">Jamie Tan</h5>
+                            <p class="card-text"> Superb JavaScript specialist</p>
+                        </div>
+                        <ul class="list-group list-group-flush">
+                            <li class="list-group-item">Always kena morning IS PASG mods</li>
+                            <li class="list-group-item">Central Westie</li>
+                            <li class="list-group-item">Eyebags until look like panda</li>
+                        </ul>
+                        <div class="card-body">
+                            Telegram: <a href="https://telegram.me/jamietann" class="card-link">@jamietann</a>
+                        </div>
+                    </div>
+                    <!-- BS card: End -->
                 </div>
-                </div>
-                <!-- BS card: End -->
-            </div>
             </div>
         </section>
     </main>
-    <footer>
-        <p>&copy; 2024 EduFly. Makes being in school a breeze.</p>
+    <!-- Footer -->
+    <footer class="container-fluid text-white pt-4 mt-auto text-center" style="background-color: #343a40">
+        <div class="row">
+            <p>&copy; 2024 EduFly. All Rights Reserved.</p>
+        </div>
     </footer>
 
 </body>
