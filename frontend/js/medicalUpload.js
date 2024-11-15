@@ -63,7 +63,7 @@ const vueApp = Vue.createApp({
             formData.append('endDate', this.endDate);
 
             try {
-                const response = await fetch('https://test-mongo-hoz8a2iyq-jamies-projects-ac80ffa6.vercel.app/api/upload-medical', {
+                const response = await fetch('https://edufly-backend-ei8pk5n0k-jamies-projects-ac80ffa6.vercel.app/api/upload-medical', {
                     method: 'POST',
                     body: formData,
                     mode: "cors"
